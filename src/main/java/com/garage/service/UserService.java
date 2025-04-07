@@ -1,7 +1,7 @@
 package com.garage.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -30,21 +30,17 @@ public class UserService implements UserDetailsService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-
-	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	    User user = userRepository.findByUsername(username)
-	            .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé: " + username));
-	    
-	    // Création d'une autorité à partir du rôle
-	    List<GrantedAuthority> authorities = new ArrayList<>();
-	    authorities.add(new SimpleGrantedAuthority(user.getRole()));
-	    
-	    return new org.springframework.security.core.userdetails.User(
-	            user.getUsername(), 
-	            user.getPassword(), 
-	            authorities);
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé: " + username));
+
+		// Création d'une autorité à partir du rôle
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(user.getRole()));
+
+		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+				authorities);
 	}
 
 	public User findByUsername(String username) {
@@ -74,6 +70,8 @@ public class UserService implements UserDetailsService {
 		newUser.setRole("ROLE_USER");
 		newUser.setFactures(new ArrayList<>());
 		newUser.setDevis(new ArrayList<>());
+		newUser.setActive(true);
+		newUser.setDateInscription(LocalDate.now());
 
 		User savedUser = userRepository.save(newUser);
 
@@ -82,14 +80,14 @@ public class UserService implements UserDetailsService {
 
 		return savedUser;
 	}
-	
+
 	// Ajouter ces méthodes à votre UserService existant
 	public List<User> findAllClients() {
-	    return userRepository.findByRole("ROLE_USER");
+		return userRepository.findByRole("ROLE_USER");
 	}
 
 	public User findById(Long id) {
-	    return userRepository.findById(id)
-	            .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec l'ID: " + id));
+		return userRepository.findById(id)
+				.orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec l'ID: " + id));
 	}
 }

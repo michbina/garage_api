@@ -115,11 +115,11 @@
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">Devis en attente:</span>
-                            <span class="summary-value" th:text="${#lists.size(#lists.filterStartsWith(devis.![statut.name()], 'EN_ATTENTE'))}">0</span>
+                            <span class="summary-value" th:text="${#lists.size(devis.?[statut != null && statut.name() == 'EN_ATTENTE'])}">0</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">Devis validés:</span>
-                            <span class="summary-value" th:text="${#lists.size(#lists.filterStartsWith(devis.![statut.name()], 'VALIDE'))}">0</span>
+                            <span class="summary-value" th:text="${#lists.size(devis.?[statut != null && statut.name() == 'VALIDE'])}">0</span>
                         </div>
                     </div>
                 </div>

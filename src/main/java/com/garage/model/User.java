@@ -1,5 +1,6 @@
 package com.garage.model;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -33,4 +34,11 @@ public class User {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Devis> devis;
+
+	@Column
+	private LocalDate dateInscription = LocalDate.now();
+
+	@Column(nullable = false)
+	private Boolean active = true;
+
 }
