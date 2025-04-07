@@ -1,101 +1,121 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Factures Client - Administration Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<meta charset="UTF-8">
+<title>Factures Client - Administration Garage</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div class="container">
-        <nav>
-            <ul>
-                <li><a th:href="@{/admin}">Dashboard</a></li>
-                <li><a th:href="@{/admin/clients}">Clients</a></li>
-                <li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
-                <li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
-                <li><a th:href="@{/logout}">Déconnexion</a></li>
-            </ul>
-        </nav>
-        
-        <!-- Message d'erreur éventuel -->
-        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}">
-            Erreur
-        </div>
-        
-        <!-- Infos client -->
-        <div th:if="${client != null}" class="client-info">
-            <h1>Factures de <span th:text="${client.username}">nomclient</span></h1>
-            <div class="client-details">
-                <p><strong>ID Client:</strong> <span th:text="${client.id}">1</span></p>
-                <p><strong>Nom d'utilisateur:</strong> <span th:text="${client.username}">nomclient</span></p>
-            </div>
-            
-            <!-- Actions rapides -->
-            <div class="action-buttons">
-                <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-secondary">Voir les devis</a>
-                <a th:href="@{/admin/factures/create}" class="btn btn-primary">Créer une facture</a>
-            </div>
-        </div>
-        
-        <!-- Message si client introuvable -->
-        <div th:if="${client == null}" class="alert">
-            Client introuvable
-        </div>
-        
-        <!-- Liste des factures -->
-        <div th:if="${client != null}">
-            <!-- Message si aucune facture -->
-            <div th:if="${factures == null || #lists.isEmpty(factures)}" class="alert">
-                Ce client n'a aucune facture pour le moment.
-            </div>
-            
-            <!-- Tableau des factures -->
-            <div th:if="${factures != null && !#lists.isEmpty(factures)}">
-                <h2>Liste des factures</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Description</th>
-                            <th>Montant</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="facture : ${factures}">
-                            <td th:text="${facture.id}">1</td>
-                            <td th:text="${facture.description}">Description facture</td>
-                            <td th:text="${facture.montant} + ' €'">100.00 €</td>
-                            <td th:text="${#temporals.format(facture.dateCreation, 'dd/MM/yyyy')}">01/01/2025</td>
-                            <td>
-                                <!-- Boutons d'action -->
-                                <a href="#" class="btn btn-small">Voir détails</a>
-                                <a href="#" class="btn btn-small btn-warning">Modifier</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <!-- Résumé financier -->
-                <div class="financial-summary">
-                    <h3>Résumé financier</h3>
-                    <p>
-                        <strong>Nombre total de factures:</strong> 
-                        <span th:text="${factures.size()}">0</span>
-                    </p>
-                    <p>
-                        <strong>Montant total:</strong> 
-                        <span th:text="${#aggregates.sum(factures.![montant])} + ' €'">0.00 €</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Bouton retour -->
-        <div class="back-button">
-            <a th:href="@{/admin}" class="btn btn-secondary">Retour au dashboard</a>
-        </div>
-    </div>
+	<div class="container">
+		<nav>
+			<ul>
+				<li><a th:href="@{/admin}">Dashboard</a></li>
+				<li><a th:href="@{/admin/clients}">Clients</a></li>
+				<li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
+				<li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
+				<li><a th:href="@{/logout}">Déconnexion</a></li>
+			</ul>
+		</nav>
+
+		<!-- Message d'erreur éventuel -->
+		<div th:if="${errorMessage != null}" class="alert alert-danger"
+			th:text="${errorMessage}">Erreur</div>
+
+		<!-- Infos client -->
+		<div th:if="${client != null}" class="client-info">
+			<h1>
+				Factures de <span th:text="${client.username}">nomclient</span>
+			</h1>
+			<div class="client-details">
+				<p>
+					<strong>ID Client:</strong> <span th:text="${client.id}">1</span>
+				</p>
+				<p>
+					<strong>Nom d'utilisateur:</strong> <span
+						th:text="${client.username}">nomclient</span>
+				</p>
+			</div>
+
+			<!-- Actions rapides -->
+			<div class="action-buttons">
+				<a th:href="@{/admin/client/{id}/devis(id=${client.id})}"
+					class="btn btn-secondary">Voir les devis</a> <a
+					th:href="@{/admin/factures/create}" class="btn btn-primary">Créer
+					une facture</a>
+			</div>
+		</div>
+
+		<!-- Message si client introuvable -->
+		<div th:if="${client == null}" class="alert">Client introuvable
+		</div>
+
+		<!-- Liste des factures -->
+		<div th:if="${client != null}">
+			<!-- Message si aucune facture -->
+			<div th:if="${factures == null || #lists.isEmpty(factures)}"
+				class="alert">Ce client n'a aucune facture pour le moment.</div>
+
+			<!-- Tableau des factures -->
+			<div th:if="${factures != null && !#lists.isEmpty(factures)}">
+				<h2>Liste des factures</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Description</th>
+							<th>Montant</th>
+							<th>Date</th>
+							<th>Actions</th>
+							<th>Documents</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="facture : ${factures}">
+							<td th:text="${facture.id}">1</td>
+							<td th:text="${facture.description}">Description facture</td>
+							<td th:text="${facture.montant} + ' €'">100.00 €</td>
+							<td
+								th:text="${#temporals.format(facture.dateCreation, 'dd/MM/yyyy')}">01/01/2025</td>
+							<td>
+								<!-- Boutons d'action --> <a href="#" class="btn btn-small">Voir
+									détails</a> <a href="#" class="btn btn-small btn-warning">Modifier</a>
+							</td>
+							<td>
+								<!-- Afficher un lien de téléchargement si un document est attaché -->
+								<a th:if="${facture.documentNom != null}"
+								th:href="@{/factures/{id}/document(id=${facture.id})}"
+								class="btn btn-small btn-info"> <i class="fas fa-download"></i>
+									Document
+							</a> <span th:unless="${facture.documentNom != null}">Aucun
+									document</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- Résumé financier -->
+				<div class="financial-summary">
+					<h3>Résumé financier</h3>
+					<p>
+						<strong>Nombre total de factures:</strong> <span
+							th:text="${factures.size()}">0</span>
+					</p>
+					<p>
+						<strong>Montant total:</strong> <span
+							th:text="${#aggregates.sum(factures.![montant])} + ' €'">0.00
+							€</span>
+					</p>
+				</div>
+
+
+			</div>
+		</div>
+
+		<!-- Bouton retour -->
+		<div class="back-button">
+			<a th:href="@{/admin}" class="btn btn-secondary">Retour au
+				dashboard</a>
+		</div>
+	</div>
 </body>
 </html>

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DevisService {
@@ -29,4 +30,8 @@ public class DevisService {
     public Devis save(Devis devis) {
         return devisRepository.save(devis);
     }
+
+	public Optional<Devis> findById(Long id) {
+		return devisRepository.findById(id);
+	}
 }

@@ -23,6 +23,16 @@ public class Devis {
     @Enumerated(EnumType.STRING)
     private StatutDevis statut;
     
+    // Nouveau champ pour le nom du document
+    private String documentNom;
+    
+    // Stockage du document (deux options)
+    // Stocker le chemin du fichier
+    private String documentPath;
+    
+    // Type MIME du document
+    private String documentType;
+    
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

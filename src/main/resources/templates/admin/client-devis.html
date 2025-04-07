@@ -64,6 +64,7 @@
                             <th>Date</th>
                             <th>Statut</th>
                             <th>Actions</th>
+                            <th>Documents</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,6 +101,15 @@
                                    th:href="@{/admin/devis/{id}/convertir(id=${d.id})}" 
                                    class="btn btn-small btn-primary">Convertir en facture</a>
                             </td>
+                            <td>
+								<!-- Afficher un lien de téléchargement si un document est attaché -->
+								<a th:if="${d.documentNom != null}"
+								th:href="@{/devis/{id}/document(id=${d.id})}"
+								class="btn btn-small btn-info"> <i class="fas fa-download"></i>
+									Document
+							</a> <span th:unless="${d.documentNom != null}">Aucun
+									document</span>
+							</td>
                         </tr>
                     </tbody>
                 </table>
