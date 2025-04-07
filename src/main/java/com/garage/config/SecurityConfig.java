@@ -25,8 +25,8 @@ public class SecurityConfig {
 						// Page de connexion accessible sans authentification
 						.requestMatchers("/login").permitAll()
 						// page admin restreint
-						.requestMatchers("/admin/**").authenticated()
-						//.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // Restreint l'accès à /admin/
+//						.requestMatchers("/admin/**").authenticated()
+						.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // Restreint l'accès à /admin/
 						// Page d'informations utilisateur nécessite une authentification
 						.requestMatchers("/api/user/info").authenticated()
 						// Toutes les autres pages nécessitent une authentification

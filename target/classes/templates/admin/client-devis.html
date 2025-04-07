@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Devis Client - Administration Garage</title>
+     <!-- CSS globaux -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- CSS spécifique à la page client-devis -->
+    <link rel="stylesheet" th:href="@{/css/clients.css}">
 </head>
 <body>
     <div class="container">
@@ -137,112 +140,10 @@
         
         <!-- Bouton retour -->
         <div class="back-button">
-            <a th:href="@{/admin}" class="btn btn-secondary">Retour au dashboard</a>
+            <a th:href="@{/admin}" class="btn btn-secondary">Retour au tableau de bord</a>
         </div>
     </div>
-    
-    <!-- Script pour afficher la signature -->
-    <script>
-        // Modal pour la signature
-        var modal = document.getElementById("signatureModal");
-        var signatureImage = document.getElementById("signatureImage");
-        var span = document.getElementsByClassName("close")[0];
-        
-        function showSignature(element) {
-            var signatureData = element.getAttribute("data-signature");
-            signatureImage.src = signatureData;
-            modal.style.display = "block";
-            return false; // Empêcher le lien de naviguer
-        }
-        
-        // Fermer le modal quand on clique sur X
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-        
-        // Fermer le modal quand on clique en dehors
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
-    
-    <!-- Styles supplémentaires pour ce template -->
-    <style>
-        /* Styles pour les statuts */
-        .status {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            display: inline-block;
-        }
-        .status-pending {
-            background-color: #ffeeba;
-            color: #856404;
-        }
-        .status-approved {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .status-cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        /* Styles pour le résumé */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .summary-item {
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-        }
-        .summary-label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        
-        /* Styles pour le modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: black;
-        }
-        #signatureImage {
-            max-width: 100%;
-            border: 1px solid #ddd;
-            margin-top: 10px;
-        }
-    </style>
+    <!-- JavaScript spécifique à la page client-devis -->
+    <script th:src="@{/js/clients.js}"></script>
 </body>
 </html>
