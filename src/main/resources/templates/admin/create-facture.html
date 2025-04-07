@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer une facture - Garage</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a th:href="@{/admin}">Dashboard</a></li>
+                <li><a th:href="@{/admin/clients}">Clients</a></li>
+                <li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
+                <li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
+                <li><a th:href="@{/logout}">Déconnexion</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Créer une nouvelle facture</h1>
+        
+        <form th:action="@{/admin/factures/create}" method="post" th:object="${facture}">
+            <div class="form-group">
+                <label for="clientId">Client:</label>
+                <select id="clientId" name="clientId" required>
+                    <option value="">Sélectionner un client</option>
+                    <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.username}"></option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" th:field="*{description}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="montant">Montant (€):</label>
+                <input type="number" id="montant" th:field="*{montant}" step="0.01" min="0" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Créer la facture</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Devis - Garage</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a th:href="@{/factures}">Factures</a></li>
+                <li><a th:href="@{/devis}">Devis</a></li>
+                <li><a th:href="@{/logout}">Déconnexion</a></li>
+                <li><a th:href="@{/api/user/info}">Mon compte</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Mes Devis</h1>
+        
+        <div th:if="${devis.empty}" class="alert">
+            Vous n'avez aucun devis pour le moment.
+        </div>
+        
+        <div th:if="${!devis.empty}" class="devis-list">
+            <div th:each="d : ${devis}" class="devis-item">
+                <h3 th:text="${d.description}"></h3>
+                <p>Montant: <strong th:text="${d.montant} + ' €'"></strong></p>
+                <p>Date: <span th:text="${#temporals.format(d.dateCreation, 'dd/MM/yyyy')}"></span></p>
+                <p>Statut: <span th:text="${d.statut}"></span></p>
+                
+                <div th:if="${d.statut.name() == 'EN_ATTENTE'}" class="signature-container">
+                    <h4>Signature pour validation</h4>
+                    <canvas id="signature-pad" class="signature-pad" width="400" height="200"></canvas>
+                    <div class="signature-controls">
+                        <button id="clear" type="button" class="btn btn-secondary">Effacer</button>
+                        <form th:action="@{/devis/{id}/valider(id=${d.id})}" method="post">
+                            <input type="hidden" id="signature-data" name="signature">
+                            <button type="submit" class="btn btn-primary" id="submit-signature">Valider le devis</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:src="@{/js/signature.js}"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Administration - Garage</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a th:href="@{/admin}">Dashboard</a></li>
+                <li><a th:href="@{/admin/clients}">Clients</a></li>
+                <li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
+                <li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
+                <li><a th:href="@{/logout}">Déconnexion</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Tableau de bord Administrateur</h1>
+        
+        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
+            Succès
+        </div>
+        
+        <div class="admin-actions">
+            <a th:href="@{/admin/factures/create}" class="btn btn-primary">Créer une nouvelle facture</a>
+            <a th:href="@{/admin/devis/create}" class="btn btn-primary">Créer un nouveau devis</a>
+        </div>
+        
+        <h2>Liste des clients</h2>
+        
+        <!-- Message si aucun client -->
+        <div th:if="${clients == null || #lists.isEmpty(clients)}" class="alert">
+            Aucun client enregistré pour le moment.
+        </div>
+        
+        <!-- Tableau des clients -->
+        <table th:if="${clients != null && !#lists.isEmpty(clients)}" class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="client : ${clients}">
+                    <td th:text="${client.id}">1</td>
+                    <td th:text="${client.username}">nomutilisateur</td>
+                    <td>
+                        <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-small">Factures</a>
+                        <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-small">Devis</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="dashboard-stats">
+            <h2>Statistiques</h2>
+            <div class="stat-card">
+                <span class="stat-title">Nombre total de clients</span>
+                <span class="stat-value" th:text="${clients != null ? clients.size() : 0}">0</span>
+            </div>
+            <!-- Vous pouvez ajouter d'autres statistiques ici -->
+        </div>
+    </div>
+</body>
+</html>
