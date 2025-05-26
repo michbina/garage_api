@@ -13,13 +13,15 @@
                 <li><a th:href="@{/admin/clients}">Clients</a></li>
                 <li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
                 <li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
+                <li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>
                 <li><a th:href="@{/logout}">Déconnexion</a></li>
             </ul>
         </nav>
         
         <h1>Créer une nouvelle facture</h1>
         
-        <form th:action="@{/admin/factures/create}" method="post" th:object="${facture}">
+       <!-- Utilisation de multipart/form-data pour permettre le téléchargement de fichiers -->
+        <form th:action="@{/admin/factures/create}" method="post" th:object="${facture}" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="clientId">Client:</label>
                 <select id="clientId" name="clientId" required>
@@ -36,6 +38,13 @@
             <div class="form-group">
                 <label for="montant">Montant (€):</label>
                 <input type="number" id="montant" th:field="*{montant}" step="0.01" min="0" required>
+            </div>
+            
+            <!-- Nouveau champ pour le téléchargement de document -->
+            <div class="form-group">
+                <label for="document">Document de facture (PDF, image):</label>
+                <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png">
+                <small class="form-text text-muted">Formats acceptés: PDF, JPG, PNG. Taille max: 5 MB</small>
             </div>
             
             <button type="submit" class="btn btn-primary">Créer la facture</button>

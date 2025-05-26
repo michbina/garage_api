@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un devis - Garage</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a th:href="@{/admin}">Dashboard</a></li>
+                <li><a th:href="@{/admin/clients}">Clients</a></li>
+                <li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
+                <li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
+                <li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>
+                <li><a th:href="@{/logout}">Déconnexion</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Créer un nouvel utilisateur</h1>
+        <form th:action="@{/admin/user/create}" method="post" th:object="${user}" >
+            
+           <div class="form-group">
+                <label for="username">Nom d'utilisateur:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
+        </form>
+    </div>
+</body>
+</html>

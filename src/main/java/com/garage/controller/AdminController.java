@@ -17,22 +17,27 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.garage.dto.CreateUserRequest;
 import com.garage.model.Devis;
 import com.garage.model.Facture;
 import com.garage.model.User;
+import com.garage.repository.UserRepository;
 import com.garage.service.DevisService;
 import com.garage.service.FactureService;
 import com.garage.service.UserService;
@@ -50,6 +55,12 @@ public class AdminController {
 
 	@Autowired
 	private DevisService devisService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	// ======== DASHBOARD PRINCIPAL ========
 
@@ -214,6 +225,7 @@ public class AdminController {
 	// ======== GESTION DES DEVIS ========
 
 	@GetMapping("/admin/devis/create")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ModelAndView showCreateDevisForm() {
 		logger.info("Affichage du formulaire de création de devis");
 
@@ -229,6 +241,7 @@ public class AdminController {
 	}
 
 	@PostMapping("/admin/devis/create")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public String createDevis(@ModelAttribute Devis devis, @RequestParam Long clientId,
 			@RequestParam(required = false) MultipartFile document, RedirectAttributes redirectAttributes) {
 		logger.info("Création d'un devis pour le client ID: {}", clientId);
@@ -262,7 +275,6 @@ public class AdminController {
 				devis.setDocumentPath(filePath.toString());
 				devis.setDocumentType(document.getContentType());
 
-
 				logger.info("Document ajouté à la facture: {}", fileName);
 			}
 
@@ -281,6 +293,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/client/{id}/devis")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ModelAndView viewClientDevis(@PathVariable Long id) {
 		logger.info("Affichage des devis du client ID: {}", id);
 
@@ -302,8 +315,9 @@ public class AdminController {
 
 		return mav;
 	}
-	
+
 	@GetMapping("/devis/{id}/document")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Resource> downloadDevisDocument(@PathVariable Long id) {
 		try {
 			Optional<Devis> devisO = devisService.findById(id);
@@ -332,6 +346,42 @@ public class AdminController {
 			return ResponseEntity.internalServerError().build();
 		}
 	}
+	
+	// seulement accessible par ROLE_ADMIN
+		@GetMapping("/create-user")
+		@PreAuthorize("hasRole('ROLE_ADMIN')")
+		public ModelAndView showCreateUser(@RequestBody CreateUserRequest request) {
+
+			ModelAndView mav = new ModelAndView("admin/create-user");
+
+			return mav;
+
+		}
+	
+	
+	// seulement accessible par ROLE_ADMIN
+		@PostMapping("/create-user")
+		@PreAuthorize("hasRole('ROLE_ADMIN')")
+		public ResponseEntity<String> createUser(@RequestBody CreateUserRequest request) {
+			if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+				return ResponseEntity.badRequest().body("Utilisateur déjà existant");
+			}
+
+			User user = new User();
+			user.setUsername(request.getUsername());
+			user.setPassword(passwordEncoder.encode(request.getPassword()));
+			user.setRole("ROLE_ADMIN");
+			user.setFactures(new ArrayList<>());
+			user.setDevis(new ArrayList<>());
+
+			userRepository.save(user);
+			logger.info("Utilisateur créé avec succès");
+
+			return ResponseEntity.ok("Utilisateur créé avec succès");
+
+		}
+
+	
 
 	// ======== MÉTHODES UTILITAIRES ========
 
