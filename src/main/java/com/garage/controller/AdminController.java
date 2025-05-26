@@ -348,11 +348,13 @@ public class AdminController {
 	}
 	
 	// seulement accessible par ROLE_ADMIN
-		@GetMapping("/create-user")
+		@GetMapping("/admin/user/create")
 		@PreAuthorize("hasRole('ROLE_ADMIN')")
-		public ModelAndView showCreateUser(@RequestBody CreateUserRequest request) {
-
+		public ModelAndView showCreateUser() {
+			logger.info("Affichage du formulaire de création d'utilisateur");
+			
 			ModelAndView mav = new ModelAndView("admin/create-user");
+			mav.addObject("user", new User());
 
 			return mav;
 
@@ -360,16 +362,16 @@ public class AdminController {
 	
 	
 	// seulement accessible par ROLE_ADMIN
-		@PostMapping("/create-user")
+		@PostMapping("/admin/user/create")
 		@PreAuthorize("hasRole('ROLE_ADMIN')")
-		public ResponseEntity<String> createUser(@RequestBody CreateUserRequest request) {
-			if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+		public ResponseEntity<String> createUser(@ModelAttribute User user) {
+			//TODO: mettre le role sur la page html
+			//créer en fonction du role.
+			if (userRepository.findByUsername(user.getUsername()).isPresent()) {
 				return ResponseEntity.badRequest().body("Utilisateur déjà existant");
 			}
 
-			User user = new User();
-			user.setUsername(request.getUsername());
-			user.setPassword(passwordEncoder.encode(request.getPassword()));
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			user.setRole("ROLE_ADMIN");
 			user.setFactures(new ArrayList<>());
 			user.setDevis(new ArrayList<>());
