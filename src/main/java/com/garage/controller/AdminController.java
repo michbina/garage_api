@@ -26,16 +26,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.garage.dto.CreateUserRequest;
 import com.garage.model.Devis;
 import com.garage.model.Facture;
+import com.garage.model.Role;
 import com.garage.model.User;
 import com.garage.repository.UserRepository;
 import com.garage.service.DevisService;
@@ -355,6 +354,7 @@ public class AdminController {
 			
 			ModelAndView mav = new ModelAndView("admin/create-user");
 			mav.addObject("user", new User());
+			mav.addObject("roles", Role.values());
 
 			return mav;
 
@@ -364,22 +364,26 @@ public class AdminController {
 	// seulement accessible par ROLE_ADMIN
 		@PostMapping("/admin/user/create")
 		@PreAuthorize("hasRole('ROLE_ADMIN')")
-		public ResponseEntity<String> createUser(@ModelAttribute User user) {
-			//TODO: mettre le role sur la page html
+		public String createUser(@ModelAttribute User user,RedirectAttributes redirectAttributes) {
 			//créer en fonction du role.
 			if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-				return ResponseEntity.badRequest().body("Utilisateur déjà existant");
+				logger.error("Utilisateur "+user.getUsername()+" déjà existant");
 			}
 
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
-			user.setRole("ROLE_ADMIN");
 			user.setFactures(new ArrayList<>());
 			user.setDevis(new ArrayList<>());
 
 			userRepository.save(user);
 			logger.info("Utilisateur créé avec succès");
 
-			return ResponseEntity.ok("Utilisateur créé avec succès");
+			//return ResponseEntity.ok("Utilisateur créé avec succès");
+			
+			// Ajouter un message flash
+		    redirectAttributes.addFlashAttribute("successMessage", "Utilisateur: "+user.getUsername()+" créé avec succès avec le rôle: "+user.getRole());
+			
+			// Redirection vers le dashboard
+		    return "redirect:/admin";
 
 		}
 

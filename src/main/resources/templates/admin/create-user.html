@@ -31,6 +31,15 @@
                 <input type="password" id="password" name="password" required>
             </div>
             
+            <div class="form-group">
+	             <select id="role" name="role" th:field="*{role}">
+				    <option th:each="role : ${roles}" th:value="${role.name()}"
+				            th:text="${role.name()}"
+				            th:selected="*{role} == ${role.name()}">
+				    </option>
+				</select>
+			</div>
+            
             <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
         </form>
     </div>

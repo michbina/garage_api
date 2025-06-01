@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Administration - Garage</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
     <div class="container">
@@ -20,9 +21,9 @@
         
         <h1>Tableau de bord Administrateur</h1>
         
-        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
-            Succès
-        </div>
+        <!-- Bandeau d'information -->
+    	<div th:if="${successMessage}" class="banner" th:text="${successMessage}"></div>
+        
         
         <div class="admin-actions">
             <a th:href="@{/admin/factures/create}" class="btn btn-primary">Créer une nouvelle facture</a>

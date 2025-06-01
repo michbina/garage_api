@@ -3,6 +3,8 @@ package com.garage.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +30,23 @@ public class User {
 	private String password;
 
 	private String role;
+	
+	// Méthode pour obtenir le rôle sous forme d'enum
+    public Role getRoleEnum() {
+        if (role == null || role.isEmpty()) {
+            return null; // ou une valeur par défaut
+        }
+        return Role.valueOf(role);
+    }
+
+    // Méthode pour définir le rôle à partir d'un enum
+    public void setRoleEnum(Role roleEnum) {
+        if (roleEnum != null) {
+            this.role = roleEnum.name();
+        } else {
+            this.role = null;
+        }
+    }
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Facture> factures;
@@ -40,5 +59,10 @@ public class User {
 
 	@Column(nullable = false)
 	private Boolean active = true;
+	
+	@Transient
+	private List<Role> roles;
+
+	
 
 }

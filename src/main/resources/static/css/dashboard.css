@@ -1,0 +1,9 @@
+/* Style pour le bandeau */
+        .banner {
+            background-color: #d4edda; /* couleur vert clair pour succès */
+            color: #155724; /* couleur verte foncée */
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
