@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -89,5 +90,15 @@ public class UserService implements UserDetailsService {
 	public User findById(Long id) {
 		return userRepository.findById(id)
 				.orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec l'ID: " + id));
+	}
+
+	public void updatePassword(Long id, String password) {
+		User user = userRepository.findById(id).orElseThrow();
+        // chiffrer le mot de passe
+        String encodedPassword = new BCryptPasswordEncoder().encode(password);
+        user.setPassword(encodedPassword);
+        user.setFirstLogin(false);
+        userRepository.save(user);
+		
 	}
 }

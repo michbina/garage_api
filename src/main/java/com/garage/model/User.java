@@ -62,6 +62,9 @@ public class User {
 	
 	@Transient
 	private List<Role> roles;
+	
+	@Column(nullable = false)
+	private Boolean firstLogin;
 
 	
 

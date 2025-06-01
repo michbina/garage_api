@@ -373,6 +373,7 @@ public class AdminController {
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			user.setFactures(new ArrayList<>());
 			user.setDevis(new ArrayList<>());
+			user.setFirstLogin(true);
 
 			userRepository.save(user);
 			logger.info("Utilisateur créé avec succès");
