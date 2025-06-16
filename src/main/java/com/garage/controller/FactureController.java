@@ -17,7 +17,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,7 +56,7 @@ public class FactureController {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private GarageRepository garageRepository;
 
@@ -83,7 +82,6 @@ public class FactureController {
 			clients = new ArrayList<>();
 		}
 
-		
 		List<Garage> garages;
 		if (user.getRole().contains(Role.ROLE_SUPERADMIN.name())) {
 			// Admin global : accès à tous
@@ -91,7 +89,7 @@ public class FactureController {
 		} else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
 			// Garage admin : accès à ses garages
 			List<Long> garageIds = user.getGarageIds();
-			 garages = garageRepository.findAllById(garageIds);
+			garages = garageRepository.findAllById(garageIds);
 		} else {
 			// autres rôles : accès restreint, selon les règles
 			garages = new ArrayList<>();

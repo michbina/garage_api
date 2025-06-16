@@ -29,6 +29,12 @@
                 </select>
             </div>
             
+            <label for="garageId">Garage:</label>
+			    <select id="garageId" name="garageId" >
+			    	<option value="">Sélectionner un garage</option>
+			        <option th:each="garage : ${garages}" th:value="${garage.id}" th:text="${garage.name}"></option>
+			    </select> 
+            
             <div class="form-group">
                 <label for="description">Description:</label>
                 <input type="text" id="description" th:field="*{description}" required>

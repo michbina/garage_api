@@ -17,7 +17,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,8 +31,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.garage.model.Devis;
+import com.garage.model.Garage;
+import com.garage.model.Role;
 import com.garage.model.User;
+import com.garage.repository.GarageRepository;
+import com.garage.repository.UserRepository;
 import com.garage.service.DevisService;
+import com.garage.service.GarageService;
 import com.garage.service.UserService;
 
 @Controller
@@ -46,6 +50,15 @@ public class DevisController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private GarageService garageService;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private GarageRepository garageRepository;
 
 	@GetMapping("/devis")
 	public String listeDevis(Model model, Authentication authentication) {
@@ -64,22 +77,39 @@ public class DevisController {
 	// ======== GESTION DES DEVIS ========
 
 	@GetMapping("/admin/devis/create")
-	public ModelAndView showCreateDevisForm() {
+	public ModelAndView showCreateDevisForm(Authentication auth) {
 		logger.info("Affichage du formulaire de création de devis");
+
+		String username = auth.getName();
+		User user = userRepository.findByUsername(username).get();
 
 		List<User> clients = userService.findAllClients();
 		if (clients == null) {
 			clients = new ArrayList<>();
 		}
 
+		List<Garage> garages;
+		if (user.getRole().contains(Role.ROLE_SUPERADMIN.name())) {
+			// Admin global : accès à tous
+			garages = new ArrayList<>(garageService.findAllGarages());
+		} else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
+			// Garage admin : accès à ses garages
+			List<Long> garageIds = user.getGarageIds();
+			garages = garageRepository.findAllById(garageIds);
+		} else {
+			// autres rôles : accès restreint, selon les règles
+			garages = new ArrayList<>();
+		}
+
 		ModelAndView mav = new ModelAndView("admin/create-devis");
 		mav.addObject("clients", clients);
 		mav.addObject("devis", new Devis());
+		mav.addObject("garages", garages);
 		return mav;
 	}
 
 	@PostMapping("/admin/devis/create")
-	public String createDevis(@ModelAttribute Devis devis, @RequestParam Long clientId,
+	public String createDevis(@ModelAttribute Devis devis, @RequestParam Long clientId, @RequestParam Long garageId,
 			@RequestParam(required = false) MultipartFile document, RedirectAttributes redirectAttributes) {
 		logger.info("Création d'un devis pour le client ID: {}", clientId);
 
@@ -87,6 +117,11 @@ public class DevisController {
 			User client = userService.findById(clientId);
 			devis.setDateCreation(LocalDate.now());
 			devis.setStatut(Devis.StatutDevis.EN_ATTENTE);
+
+			Garage garage = garageService.findById(garageId);
+			devis.setGarage(garage);
+			
+			devis.setUser(client);
 
 			// Traitement du document si présent
 			if (document != null && !document.isEmpty()) {
@@ -111,7 +146,7 @@ public class DevisController {
 				devis.setDocumentPath(filePath.toString());
 				devis.setDocumentType(document.getContentType());
 
-				logger.info("Document ajouté à la facture: {}", fileName);
+				logger.info("Document ajouté au devis: {}", fileName);
 			}
 
 			Devis savedDevis = devisService.save(devis);
