@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class PasswordController {
@@ -22,10 +23,12 @@ public class PasswordController {
     }
 
     @PostMapping("/save-new-password")
-    public String saveNewPassword(@RequestParam String password, Authentication authentication) {
+    public String saveNewPassword(@RequestParam String password, Authentication authentication,RedirectAttributes redirectAttributes) {
         String username = authentication.getName();
         User user = userService.findByUsername(username);
         userService.updatePassword(user.getId(), password);
-        return "redirect:/admin"; // ou autre page après changement
+     // Ajouter un message flash
+	    redirectAttributes.addFlashAttribute("passwordSuccessMessage", "Mot de passe modifié pour le user: "+user.getUsername());
+        return "redirect:/login"; // ou autre page après changement
     }
 }

@@ -33,7 +33,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         } else {
             // Rediriger selon rôle
             boolean isAdmin = authentication.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_SUPERADMIN") || auth.getAuthority().equals("ROLE_GARAGE_ADMIN") );
             if (isAdmin) {
                 this.setDefaultTargetUrl("/admin");
             } else {

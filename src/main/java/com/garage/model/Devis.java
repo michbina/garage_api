@@ -34,8 +34,12 @@ public class Devis {
     private String documentType;
     
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // l'utilisateur auquel la facture ou devis est rattaché
+    
+    @ManyToOne
+    @JoinColumn(name = "garage_id", nullable = false)
+    private Garage garage;
     
     public enum StatutDevis {
         EN_ATTENTE, VALIDE, ANNULE

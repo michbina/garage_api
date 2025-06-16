@@ -36,7 +36,7 @@ public class DataInitializer {
 				User admin = new User();
 				admin.setUsername("admin");
 				admin.setPassword(passwordEncoder.encode("x?Brzwiy7jc?i!Z$"));
-				admin.setRole("ROLE_ADMIN");
+				admin.setRole("ROLE_SUPERADMIN");
 				admin.setFactures(new ArrayList<>());
 				admin.setDevis(new ArrayList<>());
 				userRepository.save(admin);
@@ -57,14 +57,12 @@ public class DataInitializer {
 				facture1.setDescription("Vidange et changement de filtre");
 				facture1.setMontant(new BigDecimal("120.50"));
 				facture1.setDateCreation(LocalDate.now().minusDays(15));
-				facture1.setUser(user);
 				factureRepository.save(facture1);
 
 				Facture facture2 = new Facture();
 				facture2.setDescription("Remplacement des plaquettes de frein");
 				facture2.setMontant(new BigDecimal("230.00"));
 				facture2.setDateCreation(LocalDate.now().minusDays(5));
-				facture2.setUser(user);
 				factureRepository.save(facture2);
 
 				// Ajouter un devis
@@ -73,7 +71,6 @@ public class DataInitializer {
 				devis.setMontant(new BigDecimal("850.00"));
 				devis.setDateCreation(LocalDate.now());
 				devis.setStatut(Devis.StatutDevis.EN_ATTENTE);
-				devis.setUser(user);
 				devisRepository.save(devis);
 			}
 		};

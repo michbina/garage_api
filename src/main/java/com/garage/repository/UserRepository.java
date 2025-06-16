@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.garage.model.Garage;
 import com.garage.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -12,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
  // Ajouter cette méthode à votre UserRepository
     List<User> findByRole(String role);
+    
+    List<User> findByGaragesIn(List<Garage> garages);
 }

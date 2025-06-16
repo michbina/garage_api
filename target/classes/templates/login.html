@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Connexion - Garage</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
     <div class="login-container">
@@ -16,6 +17,9 @@
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">
             Succès
         </div>
+        
+        <!-- Après modif du mot de passe -->
+    	<div th:if="${passwordSuccessMessage}" class="banner" th:text="${passwordSuccessMessage}"></div>
         
         <form th:action="@{/login}" method="post">
             <div class="form-group">
