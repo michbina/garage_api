@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Devis Client - Administration Garage</title>
+     <!-- CSS globaux -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- CSS spécifique à la page client-devis -->
+    <link rel="stylesheet" th:href="@{/css/clients.css}">
+</head>
+<body>
+	<div th:fragment="mainMenuAdmin">
+        <nav>
+            <ul>
+                <li><a th:href="@{/admin}">Dashboard</a></li>
+                <li><a th:href="@{/admin/clients}">Clients</a></li>
+                <li><a th:href="@{/admin/factures/create}">Créer Facture</a></li>
+                <li><a th:href="@{/admin/devis/create}">Créer Devis</a></li>
+                <li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>
+                <li><a th:href="@{/logout}">Déconnexion</a></li>
+                 <li><a th:href="@{/api/user/info}">Mon compte</a></li>
+            </ul>
+        </nav>
+    </div>
+        
+      
+</body>
+</html>
