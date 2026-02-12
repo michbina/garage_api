@@ -44,8 +44,8 @@
                     <td th:text="${client.id}">1</td>
                     <td th:text="${client.username}">nomutilisateur</td>
                     <td>
-                        <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-small">Factures</a>
-                        <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-small">Devis</a>
+                        <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-small">Voir les factures</a>
+                        <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-small">Voir les devis</a>
                     </td>
                 </tr>
             </tbody>

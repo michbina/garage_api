@@ -84,9 +84,9 @@
                         <td th:text="${client.devis != null ? client.devis.size() : 0}">0</td>
                         <td>
                             <div class="client-actions">
-                                <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-small">Factures</a>
-                                <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-small">Devis</a>
-                                <button class="btn btn-small btn-info" th:onclick="'showClientDetails(' + ${client.id} + ')'">Détails</button>
+                                <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-small">Voir les factures</a>
+                                <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-small">Voir les devis</a>
+<!--                                 <button class="btn btn-small btn-info" th:onclick="'showClientDetails(' + ${client.id} + ')'">Détails du client</button> -->
                             </div>
                         </td>
                     </tr>
