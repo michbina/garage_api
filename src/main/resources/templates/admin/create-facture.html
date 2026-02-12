@@ -2,14 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Créer une facture - Garage</title>
+    <title>Ajouter une facture - Garage</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="container">
         <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
         
-        <h1>Créer une nouvelle facture</h1>
+        <h1>Ajouter une nouvelle facture</h1>
         
        <!-- Utilisation de multipart/form-data pour permettre le téléchargement de fichiers -->
         <form th:action="@{/admin/factures/create}" method="post" th:object="${facture}" enctype="multipart/form-data">
@@ -44,7 +44,7 @@
                 <small class="form-text text-muted">Formats acceptés: PDF, JPG, PNG. Taille max: 5 MB</small>
             </div>
             
-            <button type="submit" class="btn btn-primary">Créer la facture</button>
+            <button type="submit" class="btn btn-primary">Ajouter la facture</button>
         </form>
     </div>
 </body>

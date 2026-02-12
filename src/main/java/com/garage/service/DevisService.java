@@ -1,6 +1,7 @@
 package com.garage.service;
 
 import com.garage.model.Devis;
+import com.garage.model.Devis.StatutDevis;
 import com.garage.model.User;
 import com.garage.repository.DevisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,4 +35,19 @@ public class DevisService {
 	public Optional<Devis> findById(Long id) {
 		return devisRepository.findById(id);
 	}
+
+	public void validerDevis(Long id) {
+        Devis d = getDevisById(id);
+        if (d.getStatut() == StatutDevis.EN_ATTENTE) {
+            d.setStatut(StatutDevis.VALIDE);
+            devisRepository.save(d);
+        } else {
+            throw new RuntimeException("Le devis n'est pas en attente !");
+        }
+    }
+
+	 public Devis getDevisById(Long id) {
+	        return devisRepository.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Devis non trouvé"));
+	    }
 }

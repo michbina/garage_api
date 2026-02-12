@@ -2,14 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Créer un devis - Garage</title>
+    <title>Ajouter un devis - Garage</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="container">
         <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
         
-        <h1>Créer un nouveau devis</h1>
+        <h1>Ajouter un nouveau devis</h1>
         <!-- Utilisation de multipart/form-data pour permettre le téléchargement de fichiers -->
         <form th:action="@{/admin/devis/create}" method="post" th:object="${devis}" enctype="multipart/form-data">
             <div class="form-group">
@@ -43,7 +43,7 @@
                 <small class="form-text text-muted">Formats acceptés: PDF, JPG, PNG. Taille max: 5 MB</small>
             </div>
             
-            <button type="submit" class="btn btn-primary">Créer le devis</button>
+            <button type="submit" class="btn btn-primary">Ajouter le devis</button>
         </form>
     </div>
 </body>

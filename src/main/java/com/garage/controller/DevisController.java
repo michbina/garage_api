@@ -68,12 +68,6 @@ public class DevisController {
 		return "devis";
 	}
 
-	@PostMapping("/devis/{id}/valider")
-	public String validerDevis(@PathVariable Long id, @RequestParam String signature) {
-		devisService.validerDevis(id, signature);
-		return "redirect:/devis";
-	}
-
 	// ======== GESTION DES DEVIS ========
 
 	@GetMapping("/admin/devis/create")
@@ -215,5 +209,16 @@ public class DevisController {
 			return ResponseEntity.internalServerError().build();
 		}
 	}
+	
+	@PostMapping("/devis/{id}/valider")
+    public String validerDevis(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            devisService.validerDevis(id);
+            redirectAttributes.addFlashAttribute("success", "Le devis a été validé !");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/devis";
+    }
 
 }

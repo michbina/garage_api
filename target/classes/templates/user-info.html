@@ -18,16 +18,17 @@
         <h1>Mes informations</h1>
         
         <div class="user-info">
-            <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
+            <p th:if="${user.role == 'ROLE_SUPERADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }"><strong>ID:</strong> <span th:text="${user.id}"></span></p>
             <p><strong>Nom d'utilisateur:</strong> <span th:text="${user.username}"></span></p>
-            <p><strong>Rôle:</strong> <span th:text="${user.role}"></span></p>
+            <p th:if="${user.role == 'ROLE_SUPERADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }"><strong>Rôle:</strong> <span th:text="${user.role}"></span></p>
             <p><strong>Nombre de factures:</strong> <span th:text="${user.factures != null ? user.factures.size() : 0}"></span></p>
             <p><strong>Nombre de devis:</strong> <span th:text="${user.devis != null ? user.devis.size() : 0}"></span></p>
         </div>
         
         <div class="nav-buttons">
-            <a th:href="@{/factures}" class="btn btn-primary">Mes factures</a>
-            <a th:href="@{/devis}" class="btn btn-primary">Mes devis</a>
+            <a th:if="${user.role == 'ROLE_USER'}" th:href="@{/factures}" class="btn btn-primary">Mes factures</a>
+            <a th:if="${user.role == 'ROLE_USER'}" th:href="@{/devis}" class="btn btn-primary">Mes devis</a>
+            <a th:if="${user.role == 'ROLE_SUPERADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }" th:href="@{/admin}" class="btn btn-primary">Retour au dashboard</a>
         </div>
     </div>
 </body>

@@ -28,7 +28,7 @@
             <!-- Actions rapides -->
             <div class="action-buttons">
                 <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-secondary">Voir les factures</a>
-                <a th:href="@{/admin/devis/create}" class="btn btn-primary">Créer un devis</a>
+                <a th:href="@{/admin/devis/create}" class="btn btn-primary">Ajouter un devis</a>
             </div>
         </div>
         
@@ -75,12 +75,6 @@
                                 <!-- Boutons d'action -->
                                 <a href="#" class="btn btn-small">Voir détails</a>
                                 
-                                <!-- Afficher le bouton "Voir signature" uniquement si le devis est validé et a une signature -->
-                                <a th:if="${d.statut != null && d.statut.name() == 'VALIDE' && d.signature != null}" 
-                                   href="#" 
-                                   class="btn btn-small btn-success"
-                                   onclick="showSignature(this)"
-                                   th:attr="data-signature=${d.signature}">Voir signature</a>
                                 
                                 <!-- Bouton pour annuler un devis en attente -->
                                 <a th:if="${d.statut != null && d.statut.name() == 'EN_ATTENTE'}" 
@@ -88,10 +82,6 @@
                                    class="btn btn-small btn-warning"
                                    onclick="return confirm('Êtes-vous sûr de vouloir annuler ce devis?')">Annuler</a>
                                 
-                                <!-- Bouton pour convertir un devis validé en facture -->
-                                <a th:if="${d.statut != null && d.statut.name() == 'VALIDE'}" 
-                                   th:href="@{/admin/devis/{id}/convertir(id=${d.id})}" 
-                                   class="btn btn-small btn-primary">Convertir en facture</a>
                             </td>
                             <td>
 								<!-- Afficher un lien de téléchargement si un document est attaché -->
@@ -128,15 +118,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Modal pour afficher la signature -->
-        <div id="signatureModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Signature du client</h2>
-                <img id="signatureImage" src="" alt="Signature du client">
             </div>
         </div>
         

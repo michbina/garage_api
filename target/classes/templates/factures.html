@@ -28,6 +28,7 @@
                     <th>Description</th>
                     <th>Montant</th>
                     <th>Date</th>
+                    <th>Documents</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +36,15 @@
                     <td th:text="${facture.description}"></td>
                     <td th:text="${facture.montant} + ' €'"></td>
                     <td th:text="${#temporals.format(facture.dateCreation, 'dd/MM/yyyy')}"></td>
+                    <td>
+								<!-- Afficher un lien de téléchargement si un document est attaché -->
+								<a th:if="${facture.documentNom != null}"
+								th:href="@{/factures/{id}/document(id=${facture.id})}"
+								class="btn btn-small btn-info"> <i class="fas fa-download"></i>
+									Voir ma facture
+							</a> <span th:unless="${facture.documentNom != null}">Aucune
+									facture</span>
+					</td>
                 </tr>
             </tbody>
         </table>
