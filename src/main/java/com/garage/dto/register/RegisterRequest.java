@@ -1,4 +1,4 @@
-package com.garage.dto;
+package com.garage.dto.register;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

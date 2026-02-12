@@ -2,6 +2,7 @@ package com.garage.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,134 +29,128 @@ import com.garage.service.UserService;
 @Controller
 public class AdminController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private GarageService garageService;
+    @Autowired
+    private GarageService garageService;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private GarageRepository garageRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	// ======== DASHBOARD PRINCIPAL ========
+    @Autowired
+    private GarageRepository garageRepository;
 
-	@GetMapping("/admin")
-	public ModelAndView adminDashboard(Authentication authentication) {
-		logger.info("========== ADMIN DASHBOARD ==========");
-		logger.info("Utilisateur: {}", authentication.getName());
-		logger.info("Autorités: {}", authentication.getAuthorities());
-		
-		String username = authentication.getName();
-		User user = userRepository.findByUsername(username).get();
+    // ======== DASHBOARD PRINCIPAL ========
+    @GetMapping("/admin")
+    public ModelAndView adminDashboard(Authentication authentication) {
+        logger.info("========== ADMIN DASHBOARD ==========");
+        logger.info("Utilisateur: {}", authentication.getName());
+        logger.info("Autorités: {}", authentication.getAuthorities());
 
-		List<User> clients;
-		
-		
-		if (user.getRole().contains(Role.ROLE_SUPERADMIN.name())) {
-			// Admin global : accès à tous
-			clients = userService.findAllClients();
-			logger.info("Nombre de clients trouvés: {}", clients.size());
-		} else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
-			// Garage admin : accès à ses garages
-			List<Long> garageIds = user.getGarageIds();
-			List<Garage> garages = garageRepository.findAllById(garageIds);
-	        clients = userService.findByGaragesIn(garages);
-	        logger.info("Nombre de clients trouvés: {}", clients.size());
-		} else {
-			// autres rôles : accès restreint, selon les règles
-			clients = new ArrayList<>();
-		}
+        Optional<User> userOpt = userRepository.findByUsername(authentication.getName());
+        if (userOpt.isEmpty()) {
+            logger.error("Utilisateur introuvable !");
+            return new ModelAndView("error/404"); // page d'erreur si besoin
+        }
+        User user = userOpt.get();
 
-		ModelAndView mav = new ModelAndView("admin/dashboard");
-		mav.addObject("clients", clients);
-		mav.addObject("title", "Tableau de bord administrateur");
+        List<User> clients = getClientsForUser(user);
 
-		return mav;
-	}
+        ModelAndView mav = new ModelAndView("admin/dashboard");
+        mav.addObject("clients", clients);
+        mav.addObject("title", "Tableau de bord administrateur");
 
-	// ======== GESTION DES CLIENTS ========
+        return mav;
+    }
 
-	@GetMapping("/admin/clients")
-	public ModelAndView listClients() {
-		logger.info("Liste des clients");
+    // ======== LISTE DES CLIENTS ========
+    @GetMapping("/admin/clients")
+    public ModelAndView listClients() {
+        logger.info("Liste des clients");
+        List<User> clients = userService.findAllClients();
+        if (clients == null) clients = new ArrayList<>();
 
-		List<User> clients = userService.findAllClients();
-		if (clients == null) {
-			clients = new ArrayList<>();
-		}
+        ModelAndView mav = new ModelAndView("admin/clients");
+        mav.addObject("clients", clients);
 
-		ModelAndView mav = new ModelAndView("admin/clients");
-		mav.addObject("clients", clients);
+        return mav;
+    }
 
-		return mav;
-	}
+    // ======== FORMULAIRE DE CRÉATION UTILISATEUR ========
+    @GetMapping("/admin/user/create")
+    @PreAuthorize("hasAnyRole('SUPERADMIN','GARAGE_ADMIN')")
+    public ModelAndView showCreateUser() {
+        logger.info("Affichage du formulaire de création d'utilisateur");
+        List<Garage> garages = new ArrayList<>(garageService.findAllGarages());
 
-	// seulement accessible par ROLE_ADMIN
-	@GetMapping("/admin/user/create")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN','ROLE_GARAGE_ADMIN')")
-	public ModelAndView showCreateUser() {
-		logger.info("Affichage du formulaire de création d'utilisateur");
+        ModelAndView mav = new ModelAndView("admin/create-user");
+        mav.addObject("user", new User());
+        mav.addObject("roles", Role.values());
+        mav.addObject("garages", garages);
 
-		List<Garage> garages = new ArrayList<>(garageService.findAllGarages());
+        return mav;
+    }
 
-		ModelAndView mav = new ModelAndView("admin/create-user");
-		mav.addObject("user", new User());
-		mav.addObject("roles", Role.values());
-		mav.addObject("garages", garages);
+    // ======== CRÉATION UTILISATEUR ========
+    @PostMapping("/admin/user/create")
+    @PreAuthorize("hasAnyRole('SUPERADMIN','GARAGE_ADMIN')")
+    public String createUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+        Optional<User> existingUser = userRepository.findByUsername(user.getUsername());
+        if (existingUser.isPresent()) {
+            logger.error("Utilisateur {} déjà existant", user.getUsername());
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Utilisateur " + user.getUsername() + " existe déjà !");
+            return "redirect:/admin/user/create";
+        }
 
-		return mav;
+        // Encodage du mot de passe
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setFactures(new ArrayList<>());
+        user.setDevis(new ArrayList<>());
+        user.setFirstLogin(true);
 
-	}
+        // Affectation des garages si fournis
+        List<Long> garageIds = user.getGarageIds();
+        if (garageIds != null && !garageIds.isEmpty()) {
+            List<Garage> garages = garageRepository.findAllById(garageIds);
+            user.setGarages(garages);
+        }
 
-	// seulement accessible par ROLE_ADMIN
-	@PostMapping("/admin/user/create")
-	@PreAuthorize("hasAnyRole('ROLE_SUPERADMIN','ROLE_GARAGE_ADMIN')")
-	public String createUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
-		// créer en fonction du role.
-		if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-			logger.error("Utilisateur " + user.getUsername() + " déjà existant");
-		}
+        userRepository.save(user);
+        logger.info("Utilisateur {} créé avec succès", user.getUsername());
 
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setFactures(new ArrayList<>());
-		user.setDevis(new ArrayList<>());
-		user.setFirstLogin(true);
-		
-		List<Long> garageIds = user.getGarageIds();
-		
-		if (garageIds != null && !garageIds.isEmpty()) {
-		    List<Garage> garages = garageRepository.findAllById(garageIds);
-		    user.setGarages(garages);
-		}
+        redirectAttributes.addFlashAttribute("successMessage",
+                "Utilisateur " + user.getUsername() + " créé avec succès avec le rôle: " + user.getRole());
 
+        return "redirect:/admin";
+    }
 
-		userRepository.save(user);
-		logger.info("Utilisateur créé avec succès");
+    // ======== MÉTHODE DE TEST ========
+    @GetMapping("/admin/test")
+    @ResponseBody
+    public String testAdmin() {
+        return "Le contrôleur admin fonctionne correctement!";
+    }
 
-		// return ResponseEntity.ok("Utilisateur créé avec succès");
-
-		// Ajouter un message flash
-		redirectAttributes.addFlashAttribute("successMessage",
-				"Utilisateur: " + user.getUsername() + " créé avec succès avec le rôle: " + user.getRole());
-
-		// Redirection vers le dashboard
-		return "redirect:/admin";
-
-	}
-
-	// ======== MÉTHODES UTILITAIRES ========
-
-	@GetMapping("/admin/test")
-	@ResponseBody
-	public String testAdmin() {
-		return "Le contrôleur admin fonctionne correctement!";
-	}
+    // ======== MÉTHODE UTILITAIRE PRIVÉE ========
+    private List<User> getClientsForUser(User user) {
+        if (user.getRole().contains(Role.ROLE_SUPERADMIN.name())) {
+            logger.info("Accès SuperAdmin : récupération de tous les clients");
+            return userService.findAllClients();
+        } else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
+            logger.info("Accès GarageAdmin : récupération des clients de ses garages");
+            List<Long> garageIds = user.getGarageIds();
+            List<Garage> garages = garageRepository.findAllById(garageIds);
+            return userService.findByGaragesIn(garages);
+        } else {
+            logger.info("Autres rôles : aucun client accessible");
+            return new ArrayList<>();
+        }
+    }
 }

@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.garage.dto.RegisterRequest;
+import com.garage.dto.register.RegisterRequest;
 import com.garage.model.Garage;
 import com.garage.model.User;
 import com.garage.repository.UserRepository;

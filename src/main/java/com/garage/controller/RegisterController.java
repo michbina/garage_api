@@ -1,6 +1,6 @@
 package com.garage.controller;
 
-import com.garage.dto.RegisterRequest;
+import com.garage.dto.register.RegisterRequest;
 import com.garage.model.User;
 import com.garage.service.UserService;
 import jakarta.validation.Valid;
