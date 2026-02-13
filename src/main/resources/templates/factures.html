@@ -7,14 +7,7 @@
 </head>
 <body>
     <div class="container">
-        <nav>
-            <ul>
-                <li><a th:href="@{/factures}">Factures</a></li>
-                <li><a th:href="@{/devis}">Devis</a></li>
-                <li><a th:href="@{/logout}">Déconnexion</a></li>
-                <li><a th:href="@{/api/user/info}">Mon compte</a></li>
-            </ul>
-        </nav>
+    	<div th:replace="~{menu-user :: mainMenuUser}"></div>
         
         <h1>Mes Factures</h1>
         

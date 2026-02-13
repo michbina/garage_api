@@ -26,11 +26,14 @@ public class UserService implements UserDetailsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+	
+	 public UserService(UserRepository userRepository,
+             PasswordEncoder passwordEncoder) {
+			 this.userRepository = userRepository;
+			 this.passwordEncoder = passwordEncoder;
+}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -96,7 +99,7 @@ public class UserService implements UserDetailsService {
 	public void updatePassword(Long id, String password) {
 		User user = userRepository.findById(id).orElseThrow();
         // chiffrer le mot de passe
-        String encodedPassword = new BCryptPasswordEncoder().encode(password);
+        String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
         user.setFirstLogin(false);
         userRepository.save(user);
