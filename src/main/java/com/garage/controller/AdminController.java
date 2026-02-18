@@ -122,7 +122,8 @@ public class AdminController {
             user.setGarages(garages);
         }
 
-        userRepository.save(user);
+        userService.saveUserWithGarages(user);
+//        userRepository.save(user);
         logger.info("Utilisateur {} créé avec succès", user.getUsername());
 
         redirectAttributes.addFlashAttribute("successMessage",
@@ -145,8 +146,10 @@ public class AdminController {
             return userService.findAllClients();
         } else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
             logger.info("Accès GarageAdmin : récupération des clients de ses garages");
-            List<Long> garageIds = user.getGarageIds();
-            List<Garage> garages = garageRepository.findAllById(garageIds);
+//            List<Long> garageIds = user.getGarageIds();
+//            List<Garage> garages = garageRepository.findAllById(garageIds);
+            List<Garage> garages = user.getGarages();
+            if (garages == null) garages = new ArrayList<>();
             return userService.findByGaragesIn(garages);
         } else {
             logger.info("Autres rôles : aucun client accessible");

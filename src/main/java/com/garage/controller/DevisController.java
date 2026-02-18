@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -39,26 +40,33 @@ import com.garage.repository.UserRepository;
 import com.garage.service.DevisService;
 import com.garage.service.GarageService;
 import com.garage.service.UserService;
+import com.garage.storage.DocumentStorage;
 
 @Controller
 public class DevisController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DevisController.class);
 
-	@Autowired
 	private DevisService devisService;
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private GarageService garageService;
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private GarageRepository garageRepository;
+	
+	private DocumentStorage storage;
+	
+	public DevisController(DevisService devisService,UserService userService,GarageService garageService,UserRepository userRepository,GarageRepository garageRepository,DocumentStorage storage) {
+		this.devisService=devisService;
+		this.userService=userService;
+		this.garageService=garageService;
+		this.userRepository=userRepository;
+		this.garageRepository=garageRepository;
+		this.storage=storage;
+	}
 
 	@GetMapping("/devis")
 	public String listeDevis(Model model, Authentication authentication) {
@@ -119,26 +127,31 @@ public class DevisController {
 
 			// Traitement du document si présent
 			if (document != null && !document.isEmpty()) {
-				// Option 1: Enregistrer le fichier sur le serveur
+				
+				 String storageName = storage.save(document, "devis");
+				 devis.setStorageName(storageName);
+				 devis.setDocumentNom(document.getOriginalFilename());
+				 devis.setDocumentType(document.getContentType());
+				
 				String fileName = StringUtils.cleanPath(document.getOriginalFilename());
-				String uploadDir = "uploads/factures/";
-				Path uploadPath = Paths.get(uploadDir);
-
-				if (!Files.exists(uploadPath)) {
-					Files.createDirectories(uploadPath);
-				}
-
-				// Générer un nom de fichier unique
-				String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-				Path filePath = uploadPath.resolve(uniqueFileName);
-
-				// Enregistrer le fichier
-				Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-				// Enregistrer le chemin dans la facture
-				devis.setDocumentNom(fileName);
-				devis.setDocumentPath(filePath.toString());
-				devis.setDocumentType(document.getContentType());
+//				String uploadDir = "uploads/factures/";
+//				Path uploadPath = Paths.get(uploadDir);
+//
+//				if (!Files.exists(uploadPath)) {
+//					Files.createDirectories(uploadPath);
+//				}
+//
+//				// Générer un nom de fichier unique
+//				String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+//				Path filePath = uploadPath.resolve(uniqueFileName);
+//
+//				// Enregistrer le fichier
+//				Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//				// Enregistrer le chemin dans la facture
+//				devis.setDocumentNom(fileName);
+//				devis.setDocumentPath(filePath.toString());
+//				devis.setDocumentType(document.getContentType());
 
 				logger.info("Document ajouté au devis: {}", fileName);
 			}
@@ -181,34 +194,37 @@ public class DevisController {
 	}
 
 	@GetMapping("/devis/{id}/document")
-	public ResponseEntity<Resource> downloadDevisDocument(@PathVariable Long id) {
-		try {
-			Optional<Devis> devisO = devisService.findById(id);
+	public ResponseEntity<Resource> downloadDevisDocument(
+	        @PathVariable Long id,
+	        Authentication authentication) {
 
-			if (devisO.get() != null) {
+	    try {
 
-				Devis devis = devisO.get();
+	        User currentUser = userService.findByUsername(authentication.getName());
 
-				if (devis.getDocumentPath() != null) {
-					// Option 1: Récupérer depuis le système de fichiers
-					Path path = Paths.get(devis.getDocumentPath());
-					Resource resource = new UrlResource(path.toUri());
+	        Devis devis = devisService.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Devis introuvable"));
 
-					if (resource.exists() || resource.isReadable()) {
-						return ResponseEntity.ok().contentType(MediaType.parseMediaType(devis.getDocumentType()))
-								.header(HttpHeaders.CONTENT_DISPOSITION,
-										"attachment; filename=\"" + devis.getDocumentNom() + "\"")
-								.body(resource);
-					}
-				}
+	        // 🔐 Sécurité
+	        boolean isOwner = devis.getUser().getId().equals(currentUser.getId());
+	        boolean isAdmin = currentUser.getRole().contains("ADMIN");
 
-			}
+	        if (!isOwner && !isAdmin)
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-			return ResponseEntity.notFound().build();
-		} catch (Exception e) {
-			return ResponseEntity.internalServerError().build();
-		}
+	        Resource resource = storage.load("devis", devis.getStorageName());;
+
+	        return ResponseEntity.ok()
+	                .contentType(MediaType.parseMediaType(devis.getDocumentType()))
+	                .header(HttpHeaders.CONTENT_DISPOSITION,
+	                        "attachment; filename=\"" + devis.getDocumentNom() + "\"")
+	                .body(resource);
+
+	    } catch (Exception e) {
+	        return ResponseEntity.internalServerError().build();
+	    }
 	}
+
 	
 	@PostMapping("/devis/{id}/valider")
     public String validerDevis(@PathVariable Long id, RedirectAttributes redirectAttributes) {

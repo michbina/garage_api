@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,35 +31,44 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.garage.model.Devis;
 import com.garage.model.Facture;
 import com.garage.model.Garage;
 import com.garage.model.Role;
 import com.garage.model.User;
 import com.garage.repository.GarageRepository;
 import com.garage.repository.UserRepository;
+import com.garage.service.DevisService;
 import com.garage.service.FactureService;
 import com.garage.service.GarageService;
 import com.garage.service.UserService;
+import com.garage.storage.DocumentStorage;
 
 @Controller
 public class FactureController {
 
 	private static final Logger logger = LoggerFactory.getLogger(FactureController.class);
 
-	@Autowired
 	private FactureService factureService;
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private GarageService garageService;
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private GarageRepository garageRepository;
+	
+	private DocumentStorage storage;
+	
+	public FactureController(FactureService factureService,UserService userService,GarageService garageService,UserRepository userRepository,GarageRepository garageRepository,DocumentStorage storage) {
+		this.factureService=factureService;
+		this.userService=userService;
+		this.garageService=garageService;
+		this.userRepository=userRepository;
+		this.garageRepository=garageRepository;
+		this.storage=storage;
+	}
 
 	@GetMapping("/factures")
 	public String listeFactures(Model model, Authentication authentication) {
@@ -119,29 +129,30 @@ public class FactureController {
 
 			// Traitement du document si présent
 			if (document != null && !document.isEmpty()) {
-				// Option 1: Enregistrer le fichier sur le serveur
-				String fileName = StringUtils.cleanPath(document.getOriginalFilename());
-				String uploadDir = "uploads/factures/";
-				Path uploadPath = Paths.get(uploadDir);
-
-				if (!Files.exists(uploadPath)) {
-					Files.createDirectories(uploadPath);
-				}
-
-				// Générer un nom de fichier unique
-				String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-				Path filePath = uploadPath.resolve(uniqueFileName);
-
-				// Enregistrer le fichier
-				Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-				// Enregistrer le chemin dans la facture
-				facture.setDocumentNom(fileName);
-				facture.setDocumentPath(filePath.toString());
+				String storageName = storage.save(document, "factures");
+				facture.setStorageName(storageName);
+				facture.setDocumentNom(document.getOriginalFilename());
 				facture.setDocumentType(document.getContentType());
+				String fileName = StringUtils.cleanPath(document.getOriginalFilename());
+//				String uploadDir = "uploads/factures/";
+//				Path uploadPath = Paths.get(uploadDir);
+//
+//				if (!Files.exists(uploadPath)) {
+//					Files.createDirectories(uploadPath);
+//				}
+//
+//				// Générer un nom de fichier unique
+//				String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+//				Path filePath = uploadPath.resolve(uniqueFileName);
+//
+//				// Enregistrer le fichier
+//				Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//				// Enregistrer le chemin dans la facture
+//				facture.setDocumentNom(fileName);
+//				facture.setDocumentPath(filePath.toString());
+//				facture.setDocumentType(document.getContentType());
 
-				// Option 2: Enregistrer le fichier directement en base de données
-				// facture.setDocumentData(document.getBytes());
 
 				logger.info("Document ajouté à la facture: {}", fileName);
 			}
@@ -184,30 +195,27 @@ public class FactureController {
 	}
 
 	@GetMapping("/factures/{id}/document")
-	public ResponseEntity<Resource> downloadFactureDocument(@PathVariable Long id) {
+	public ResponseEntity<Resource> downloadFactureDocument(@PathVariable Long id,Authentication authentication) {
 		try {
-			Optional<Facture> factureO = factureService.findById(id);
+			User currentUser = userService.findByUsername(authentication.getName());
 
-			if (factureO.get() != null) {
+	        Facture facture = factureService.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Facture introuvable"));
+	        
+	        // 🔐 Sécurité
+	        boolean isOwner = facture.getUser().getId().equals(currentUser.getId());
+	        boolean isAdmin = currentUser.getRole().contains("ADMIN");
 
-				Facture facture = factureO.get();
+	        if (!isOwner && !isAdmin)
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-				if (facture.getDocumentPath() != null) {
-					// Option 1: Récupérer depuis le système de fichiers
-					Path path = Paths.get(facture.getDocumentPath());
-					Resource resource = new UrlResource(path.toUri());
+	        Resource resource = storage.load("factures", facture.getStorageName());;
 
-					if (resource.exists() || resource.isReadable()) {
-						return ResponseEntity.ok().contentType(MediaType.parseMediaType(facture.getDocumentType()))
-								.header(HttpHeaders.CONTENT_DISPOSITION,
-										"attachment; filename=\"" + facture.getDocumentNom() + "\"")
-								.body(resource);
-					}
-				}
-
-			}
-
-			return ResponseEntity.notFound().build();
+	        return ResponseEntity.ok()
+	                .contentType(MediaType.parseMediaType(facture.getDocumentType()))
+	                .header(HttpHeaders.CONTENT_DISPOSITION,
+	                        "attachment; filename=\"" + facture.getDocumentNom() + "\"")
+	                .body(resource);
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().build();
 		}

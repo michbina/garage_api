@@ -1,6 +1,7 @@
 package com.garage.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,14 +80,17 @@ public class User {
 	@Transient
 	private List<Long> garageIds;
 
-//	public List<Long> getGarageIds() {
-//		if (garages == null)
-//			return null;
-//		return garages.stream().map(Garage::getId).collect(Collectors.toList());
-//	}
-
 	public void setGarageIds(List<Long> garageIds) {
 		this.garageIds = garageIds;
+	}
+	
+	public List<Long> getGarageIds() {
+	    if (garages == null)
+	        return new ArrayList<>();
+
+	    return garages.stream()
+	            .map(Garage::getId)
+	            .toList();
 	}
 
 }

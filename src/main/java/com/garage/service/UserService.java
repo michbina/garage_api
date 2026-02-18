@@ -6,19 +6,18 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.garage.dto.register.RegisterRequest;
 import com.garage.model.Garage;
 import com.garage.model.User;
+import com.garage.repository.GarageRepository;
 import com.garage.repository.UserRepository;
 
 @Service
@@ -28,11 +27,13 @@ public class UserService implements UserDetailsService {
 
 	private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GarageRepository garageRepository;
 	
 	 public UserService(UserRepository userRepository,
-             PasswordEncoder passwordEncoder) {
+             PasswordEncoder passwordEncoder,GarageRepository garageRepository) {
 			 this.userRepository = userRepository;
 			 this.passwordEncoder = passwordEncoder;
+			 this.garageRepository=garageRepository;
 }
 
 	@Override
@@ -102,12 +103,42 @@ public class UserService implements UserDetailsService {
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
         user.setFirstLogin(false);
-        userRepository.save(user);
+        saveUserWithGarages(user);
+//        userRepository.save(user);
 		
 	}
 
 	public List<User> findByGaragesIn(List<Garage> garages) {
 		
 		return userRepository.findByGaragesIn(garages);
+	}
+	
+	public User saveUserWithGarages(User user) {
+
+	    if (user.getGarageIds() != null) {
+
+//	        List<Garage> garages = garageRepository.findAllById(user.getGarageIds());
+	        List<Garage> garages = user.getGarages();
+	        if (garages == null) garages = new ArrayList<>();
+
+	        user.setGarages(garages);
+
+	    } else {
+	        user.setGarages(new ArrayList<>());
+	    }
+
+	    return userRepository.save(user);
+	}
+	
+	public User updateUserGarages(Long userId, List<Long> garageIds) {
+
+	    User user = findById(userId);
+
+//	    List<Garage> garages = garageRepository.findAllById(garageIds);
+	    List<Garage> garages = user.getGarages();
+	    if (garages == null) garages = new ArrayList<>();
+	    user.setGarages(garages);
+
+	    return userRepository.save(user);
 	}
 }

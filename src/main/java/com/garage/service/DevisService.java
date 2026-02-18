@@ -1,14 +1,15 @@
 package com.garage.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.garage.model.Devis;
 import com.garage.model.Devis.StatutDevis;
 import com.garage.model.User;
 import com.garage.repository.DevisRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DevisService {

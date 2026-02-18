@@ -4,6 +4,7 @@ import lombok.Data;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -23,12 +24,11 @@ public class Devis {
     @Enumerated(EnumType.STRING)
     private StatutDevis statut;
     
-    // Nouveau champ pour le nom du document
+    // Nom visible utilisateur (Facture_Janvier.pdf)
     private String documentNom;
     
-    // Stockage du document (deux options)
-    // Stocker le chemin du fichier
-    private String documentPath;
+    private String storageName;   // Nom réel disque (UUID.pdf)
+    
     
     // Type MIME du document
     private String documentType;
@@ -44,4 +44,16 @@ public class Devis {
     public enum StatutDevis {
         EN_ATTENTE, VALIDE, ANNULE
     }
+    
+    @Column(unique = true, nullable = false)
+    private String publicId; // UUID public
+    
+    @PrePersist
+    public void generatePublicId() {
+        if (publicId == null) {
+            publicId = UUID.randomUUID().toString();
+        }
+    }
+ 
+    
 }

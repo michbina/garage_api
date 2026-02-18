@@ -3,6 +3,7 @@ package com.garage.config;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +19,28 @@ import com.garage.model.User;
 import com.garage.repository.DevisRepository;
 import com.garage.repository.FactureRepository;
 import com.garage.repository.UserRepository;
+import com.garage.service.UserService;
+
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class DataInitializer {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
-	@Autowired
+	
 	private PasswordEncoder passwordEncoder;
+	
+	 private final DevisRepository devisRepository;
+	private final FactureRepository factureRepository;
+	private final UserService userService;
+	
+	public DataInitializer(PasswordEncoder passwordEncoder,DevisRepository devisRepository,FactureRepository factureRepository,UserService userService) {
+		this.passwordEncoder=passwordEncoder;
+		this.devisRepository=devisRepository;
+		this.factureRepository=factureRepository;
+		this.userService=userService;
+	}
 
 	@Bean
 	public CommandLineRunner initData(UserRepository userRepository, FactureRepository factureRepository,
@@ -50,7 +65,8 @@ public class DataInitializer {
 				user.setRole("ROLE_USER");
 				user.setFactures(new ArrayList<>());
 				user.setDevis(new ArrayList<>());
-				userRepository.save(user);
+				userService.saveUserWithGarages(user);
+//				userRepository.save(user);
 
 				// Ajouter quelques factures pour l'utilisateur
 				Facture facture1 = new Facture();
@@ -75,4 +91,21 @@ public class DataInitializer {
 			}
 		};
 	}
+	
+	 @PostConstruct
+	    public void migrate() {
+
+	        devisRepository.findAll().forEach(d -> {
+	            if(d.getPublicId() == null)
+	                d.setPublicId(UUID.randomUUID().toString());
+	        });
+
+	        factureRepository.findAll().forEach(f -> {
+	            if(f.getPublicId() == null)
+	                f.setPublicId(UUID.randomUUID().toString());
+	        });
+
+	        devisRepository.saveAll(devisRepository.findAll());
+	        factureRepository.saveAll(factureRepository.findAll());
+	    }
 }
