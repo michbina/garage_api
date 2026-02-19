@@ -51,7 +51,7 @@ public class DataInitializer {
 				User admin = new User();
 				admin.setUsername("admin");
 				admin.setPassword(passwordEncoder.encode("x?Brzwiy7jc?i!Z$"));
-				admin.setRole("ROLE_SUPERADMIN");
+				admin.setRole("ROLE_ADMIN");
 				admin.setFactures(new ArrayList<>());
 				admin.setDevis(new ArrayList<>());
 				userRepository.save(admin);

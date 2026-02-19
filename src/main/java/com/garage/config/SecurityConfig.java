@@ -27,7 +27,7 @@ public class SecurityConfig {
 						.requestMatchers("/login").permitAll()
 						// page admin restreint
 //						.requestMatchers("/admin/**").authenticated()
-						.requestMatchers("/admin/**").hasAnyAuthority("ROLE_SUPERADMIN", "ROLE_GARAGE_ADMIN") // Restreint l'accès à /admin/
+						.requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GARAGE_ADMIN") // Restreint l'accès à /admin/
 						// Page d'informations utilisateur nécessite une authentification
 						.requestMatchers("/api/user/info").authenticated()
 						// Toutes les autres pages nécessitent une authentification

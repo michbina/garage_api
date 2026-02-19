@@ -3,7 +3,6 @@ package com.garage.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Transient;
 
@@ -85,6 +84,9 @@ public class User {
 	}
 	
 	public List<Long> getGarageIds() {
+		 if (garageIds != null) {
+		        return garageIds;
+		    }
 	    if (garages == null)
 	        return new ArrayList<>();
 

@@ -91,7 +91,7 @@ public class DevisController {
 		}
 
 		List<Garage> garages;
-		if (user.getRole().contains(Role.ROLE_SUPERADMIN.name())) {
+		if (user.getRole().contains(Role.ROLE_ADMIN.name())) {
 			// Admin global : accès à tous
 			garages = new ArrayList<>(garageService.findAllGarages());
 		} else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
