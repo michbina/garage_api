@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Devis Client - Administration Garage</title>
@@ -17,6 +17,9 @@
                 <li><a th:href="@{/admin/factures/create}">Ajouter Facture</a></li>
                 <li><a th:href="@{/admin/devis/create}">Ajouter Devis</a></li>
                 <li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+    				<a th:href="@{/admin/garage/create}">Créer un garage</a>
+				</li>
                 <li><a th:href="@{/change-password}">Changer mot de passe</a></li>
                 <li><a th:href="@{/logout}">Déconnexion</a></li>
                  <li><a th:href="@{/api/user/info}">Mon compte</a></li>

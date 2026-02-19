@@ -37,6 +37,7 @@
                     <th>ID</th>
                     <th>Nom d'utilisateur</th>
                     <th>Actions</th>
+                    <th>Garages</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +48,12 @@
                         <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-small">Voir les factures</a>
                         <a th:href="@{/admin/client/{id}/devis(id=${client.id})}" class="btn btn-small">Voir les devis</a>
                     </td>
+                    <td>
+						    <span th:if="${client.garages == null || #lists.isEmpty(client.garages)}">Aucun</span>
+						    <ul th:if="${client.garages != null && !#lists.isEmpty(client.garages)}">
+						        <li th:each="garage : ${client.garages}" th:text="${garage.name}"></li>
+						    </ul>
+						</td>
                 </tr>
             </tbody>
         </table>

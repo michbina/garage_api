@@ -23,7 +23,7 @@
             </div>
             
             <div class="form-group">
-	             <select id="role" name="role" th:field="*{role}">
+	             <select id="role" name="role" th:field="*{role}" required>
 				    <option th:each="role : ${roles}" th:value="${role.name()}"
 				            th:text="${role.name()}"
 				            th:selected="*{role} == ${role.name()}">
@@ -33,7 +33,7 @@
 			
 			<div class="form-group">
 			    <label for="garages">Affecter les garages :</label>
-			    <select id="garages" name="garageIds" multiple th:field="*{garageIds}">
+			    <select id="garages" name="garageIds" multiple th:field="*{garageIds}" required>
 			        <option th:each="garage : ${garages}" th:value="${garage.id}" th:text="${garage.name}"></option>
 			    </select>
 			</div>

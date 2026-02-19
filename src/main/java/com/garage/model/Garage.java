@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -24,6 +25,7 @@ public class Garage {
 	private Long id;
 
 	@Column(nullable = false)
+	@NotBlank(message = "Le nom du garage est obligatoire")
 	private String name;
 
 	private String location; // optionnel, si besoin

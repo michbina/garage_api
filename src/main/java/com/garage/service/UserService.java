@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.garage.dto.register.RegisterRequest;
 import com.garage.model.Garage;
+import com.garage.model.Role;
 import com.garage.model.User;
 import com.garage.repository.GarageRepository;
 import com.garage.repository.UserRepository;
@@ -43,7 +44,7 @@ public class UserService implements UserDetailsService {
 
 		// Création d'une autorité à partir du rôle
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority(user.getRole()));
+		authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
 
 		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
 				authorities);
@@ -73,7 +74,7 @@ public class UserService implements UserDetailsService {
 		User newUser = new User();
 		newUser.setUsername(registerRequest.getUsername());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-		newUser.setRole("ROLE_USER");
+		newUser.setRole(Role.ROLE_USER);
 		newUser.setFactures(new ArrayList<>());
 		newUser.setDevis(new ArrayList<>());
 		newUser.setActive(true);
@@ -89,7 +90,7 @@ public class UserService implements UserDetailsService {
 
 	// Ajouter ces méthodes à votre UserService existant
 	public List<User> findAllClients() {
-		return userRepository.findByRole("ROLE_USER");
+		return userRepository.findByRole(Role.ROLE_USER);
 	}
 
 	public User findById(Long id) {
@@ -140,5 +141,9 @@ public class UserService implements UserDetailsService {
 	    user.setGarages(garages);
 
 	    return userRepository.save(user);
+	}
+	
+	public List<User> findClientsByGarageIds(List<Long> garageIds) {
+	    return userRepository.findByGarages_IdInAndRole(garageIds, Role.ROLE_USER);
 	}
 }

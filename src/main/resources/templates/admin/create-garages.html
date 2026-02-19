@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un garage</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+         <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
+        
+        <h1>Créer un nouveau garage</h1>
+        <form th:action="@{/admin/garage/create}" method="post" th:object="${garage}" >
+            
+           <div class="form-group">
+                <label for="garage">Nom du garage:</label>
+                <input type="text" id="name" th:field="*{name}" required>
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></div>
+            </div>
+            
+             <div class="form-group">
+                <label for="garage">Adresse du garage:</label>
+                <input type="text" id="location" th:field="*{location}" required>
+                <div th:if="${#fields.hasErrors('location')}" th:errors="*{location}" class="error"></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Créer le garage</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -14,10 +14,10 @@
         <form th:action="@{/admin/devis/create}" method="post" th:object="${devis}" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="clientId">Client:</label>
-                <select id="clientId" name="clientId" required>
-                    <option value="">Sélectionner un client</option>
-                    <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.username}"></option>
-                </select>
+                <select th:field="*{user.id}" required>
+				    <option value="">Sélectionner un client</option>
+				     <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.username}"></option>
+				</select>
             </div>
             
             <label for="garageId">Garage:</label>

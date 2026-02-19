@@ -28,7 +28,7 @@
             <!-- Actions rapides -->
             <div class="action-buttons">
                 <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-secondary">Voir les factures</a>
-                <a th:href="@{/admin/devis/create}" class="btn btn-primary">Ajouter un devis</a>
+                <a th:href="@{/admin/devis/create(userId=${client.id})}" class="btn btn-primary">Ajouter un devis</a>
             </div>
         </div>
         

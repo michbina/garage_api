@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.garage.model.Devis;
 import com.garage.model.Facture;
+import com.garage.model.Role;
 import com.garage.model.User;
 import com.garage.repository.DevisRepository;
 import com.garage.repository.FactureRepository;
@@ -28,18 +28,18 @@ public class DataInitializer {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
-	
 	private PasswordEncoder passwordEncoder;
-	
-	 private final DevisRepository devisRepository;
+
+	private final DevisRepository devisRepository;
 	private final FactureRepository factureRepository;
 	private final UserService userService;
-	
-	public DataInitializer(PasswordEncoder passwordEncoder,DevisRepository devisRepository,FactureRepository factureRepository,UserService userService) {
-		this.passwordEncoder=passwordEncoder;
-		this.devisRepository=devisRepository;
-		this.factureRepository=factureRepository;
-		this.userService=userService;
+
+	public DataInitializer(PasswordEncoder passwordEncoder, DevisRepository devisRepository,
+			FactureRepository factureRepository, UserService userService) {
+		this.passwordEncoder = passwordEncoder;
+		this.devisRepository = devisRepository;
+		this.factureRepository = factureRepository;
+		this.userService = userService;
 	}
 
 	@Bean
@@ -51,7 +51,7 @@ public class DataInitializer {
 				User admin = new User();
 				admin.setUsername("admin");
 				admin.setPassword(passwordEncoder.encode("x?Brzwiy7jc?i!Z$"));
-				admin.setRole("ROLE_ADMIN");
+				admin.setRole(Role.ROLE_ADMIN);
 				admin.setFactures(new ArrayList<>());
 				admin.setDevis(new ArrayList<>());
 				userRepository.save(admin);
@@ -62,7 +62,7 @@ public class DataInitializer {
 				User user = new User();
 				user.setUsername("client");
 				user.setPassword(passwordEncoder.encode("password"));
-				user.setRole("ROLE_USER");
+				user.setRole(Role.ROLE_USER);
 				user.setFactures(new ArrayList<>());
 				user.setDevis(new ArrayList<>());
 				userService.saveUserWithGarages(user);
@@ -91,21 +91,21 @@ public class DataInitializer {
 			}
 		};
 	}
-	
-	 @PostConstruct
-	    public void migrate() {
 
-	        devisRepository.findAll().forEach(d -> {
-	            if(d.getPublicId() == null)
-	                d.setPublicId(UUID.randomUUID().toString());
-	        });
+	@PostConstruct
+	public void migrate() {
 
-	        factureRepository.findAll().forEach(f -> {
-	            if(f.getPublicId() == null)
-	                f.setPublicId(UUID.randomUUID().toString());
-	        });
+		devisRepository.findAll().forEach(d -> {
+			if (d.getPublicId() == null)
+				d.setPublicId(UUID.randomUUID().toString());
+		});
 
-	        devisRepository.saveAll(devisRepository.findAll());
-	        factureRepository.saveAll(factureRepository.findAll());
-	    }
+		factureRepository.findAll().forEach(f -> {
+			if (f.getPublicId() == null)
+				f.setPublicId(UUID.randomUUID().toString());
+		});
+
+		devisRepository.saveAll(devisRepository.findAll());
+		factureRepository.saveAll(factureRepository.findAll());
+	}
 }

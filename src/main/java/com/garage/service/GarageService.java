@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.garage.model.Devis;
 import com.garage.model.Garage;
 import com.garage.repository.GarageRepository;
 
@@ -23,5 +24,9 @@ public class GarageService {
 	public List<Garage> findAllGarages() {
 		return garageRepository.findAll();
 	}
+	
+	 public Garage save(Garage garage) {
+	        return garageRepository.save(garage);
+	    }
 
 }

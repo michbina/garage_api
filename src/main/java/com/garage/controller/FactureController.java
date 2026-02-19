@@ -1,19 +1,12 @@
 package com.garage.controller;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,14 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.garage.model.Devis;
 import com.garage.model.Facture;
 import com.garage.model.Garage;
 import com.garage.model.Role;
 import com.garage.model.User;
 import com.garage.repository.GarageRepository;
 import com.garage.repository.UserRepository;
-import com.garage.service.DevisService;
 import com.garage.service.FactureService;
 import com.garage.service.GarageService;
 import com.garage.service.UserService;
@@ -58,16 +49,17 @@ public class FactureController {
 	private UserRepository userRepository;
 
 	private GarageRepository garageRepository;
-	
+
 	private DocumentStorage storage;
-	
-	public FactureController(FactureService factureService,UserService userService,GarageService garageService,UserRepository userRepository,GarageRepository garageRepository,DocumentStorage storage) {
-		this.factureService=factureService;
-		this.userService=userService;
-		this.garageService=garageService;
-		this.userRepository=userRepository;
-		this.garageRepository=garageRepository;
-		this.storage=storage;
+
+	public FactureController(FactureService factureService, UserService userService, GarageService garageService,
+			UserRepository userRepository, GarageRepository garageRepository, DocumentStorage storage) {
+		this.factureService = factureService;
+		this.userService = userService;
+		this.garageService = garageService;
+		this.userRepository = userRepository;
+		this.garageRepository = garageRepository;
+		this.storage = storage;
 	}
 
 	@GetMapping("/factures")
@@ -81,25 +73,30 @@ public class FactureController {
 	// ======== GESTION DES FACTURES ========
 
 	@GetMapping("/admin/factures/create")
-	public ModelAndView showCreateFactureForm(Model model, Authentication auth) {
+	public ModelAndView showCreateFactureForm(@RequestParam(required = false) Long userId,Model model, Authentication auth) {
 		logger.info("Affichage du formulaire de création de facture");
+		
+		Facture facture = new Facture();
+	    if (userId != null) {
+	        User client = userService.findById(userId);
+	        facture.setUser(client);
+	    }
 
 		String username = auth.getName();
 		User user = userRepository.findByUsername(username).get();
 
-		List<User> clients = userService.findAllClients();
-		if (clients == null) {
-			clients = new ArrayList<>();
-		}
+		List<User> clients = new ArrayList<>();
 
 		List<Garage> garages;
-		if (user.getRole().contains(Role.ROLE_ADMIN.name())) {
+		if (user.getRole()==Role.ROLE_ADMIN) {
 			// Admin global : accès à tous
 			garages = new ArrayList<>(garageService.findAllGarages());
-		} else if (user.getRole().contains(Role.ROLE_GARAGE_ADMIN.name())) {
+			clients = userService.findAllClients();
+		} else if (user.getRole()==Role.ROLE_GARAGE_ADMIN) {
 			// Garage admin : accès à ses garages
 			List<Long> garageIds = user.getGarageIds();
 			garages = garageRepository.findAllById(garageIds);
+			clients = userService.findClientsByGarageIds(garageIds);
 		} else {
 			// autres rôles : accès restreint, selon les règles
 			garages = new ArrayList<>();
@@ -107,18 +104,35 @@ public class FactureController {
 
 		ModelAndView mav = new ModelAndView("admin/create-facture");
 		mav.addObject("clients", clients);
-		mav.addObject("facture", new Facture());
+		mav.addObject("facture", facture);
 		mav.addObject("garages", garages);
 		return mav;
 	}
 
 	@PostMapping("/admin/factures/create")
 	public String createFacture(@ModelAttribute Facture facture, @RequestParam Long clientId,
-			@RequestParam Long garageId, @RequestParam(required = false) MultipartFile document,
-			RedirectAttributes redirectAttributes) {
+			@RequestParam Long garageId, @RequestParam(required = true) MultipartFile document,
+			RedirectAttributes redirectAttributes, Authentication authentication) {
 		logger.info("Création d'une facture pour le client ID: {}", clientId);
 
 		try {
+			User user = userService.findByUsername(authentication.getName());
+
+			// Vérification pour les garage admins
+			if (user.getRole()==Role.ROLE_GARAGE_ADMIN) {
+				List<Long> garageIds = user.getGarageIds();
+				if (!garageIds.contains(garageId)) {
+					redirectAttributes.addFlashAttribute("errorMessage", "Accès refusé à ce garage.");
+					return "redirect:/admin";
+				}
+				User client = userService.findById(clientId);
+				if (client.getGarages() == null
+						|| client.getGarages().stream().map(Garage::getId).noneMatch(garageIds::contains)) {
+					redirectAttributes.addFlashAttribute("errorMessage", "Ce client n'appartient pas à votre garage.");
+					return "redirect:/admin";
+				}
+			}
+
 			User client = userService.findById(clientId);
 			facture.setUser(client);
 			facture.setDateCreation(LocalDate.now());
@@ -134,29 +148,8 @@ public class FactureController {
 				facture.setDocumentNom(document.getOriginalFilename());
 				facture.setDocumentType(document.getContentType());
 				String fileName = StringUtils.cleanPath(document.getOriginalFilename());
-//				String uploadDir = "uploads/factures/";
-//				Path uploadPath = Paths.get(uploadDir);
-//
-//				if (!Files.exists(uploadPath)) {
-//					Files.createDirectories(uploadPath);
-//				}
-//
-//				// Générer un nom de fichier unique
-//				String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-//				Path filePath = uploadPath.resolve(uniqueFileName);
-//
-//				// Enregistrer le fichier
-//				Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//				// Enregistrer le chemin dans la facture
-//				facture.setDocumentNom(fileName);
-//				facture.setDocumentPath(filePath.toString());
-//				facture.setDocumentType(document.getContentType());
-
-
 				logger.info("Document ajouté à la facture: {}", fileName);
 			}
-
 			Facture savedFacture = factureService.save(facture);
 			logger.info("Facture créée avec succès, ID: {}", savedFacture.getId());
 
@@ -195,27 +188,39 @@ public class FactureController {
 	}
 
 	@GetMapping("/factures/{id}/document")
-	public ResponseEntity<Resource> downloadFactureDocument(@PathVariable Long id,Authentication authentication) {
+	public ResponseEntity<Resource> downloadFactureDocument(@PathVariable Long id, Authentication authentication) {
 		try {
 			User currentUser = userService.findByUsername(authentication.getName());
 
-	        Facture facture = factureService.findById(id)
-	                .orElseThrow(() -> new RuntimeException("Facture introuvable"));
-	        
-	        // 🔐 Sécurité
-	        boolean isOwner = facture.getUser().getId().equals(currentUser.getId());
-	        boolean isAdmin = currentUser.getRole().contains("ADMIN");
+			Facture facture = factureService.findById(id)
+					.orElseThrow(() -> new RuntimeException("Facture introuvable"));
 
-	        if (!isOwner && !isAdmin)
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			// 🔐 Sécurité
+			boolean isOwner = facture.getUser().getId().equals(currentUser.getId());
+			boolean isAdmin = currentUser.getRole()==Role.ROLE_ADMIN;
+			boolean isGarageAdmin = currentUser.getRole() == Role.ROLE_GARAGE_ADMIN;
+			boolean isClientOfGarage = false;
+			
+			if (isGarageAdmin) {
+			    List<Long> garageIds = currentUser.getGarageIds();
+			    List<Garage> clientGarages = facture.getUser().getGarages();
+			    if (clientGarages != null) {
+			        isClientOfGarage = clientGarages.stream()
+			            .map(Garage::getId)
+			            .anyMatch(garageIds::contains);
+			    }
+			}
 
-	        Resource resource = storage.load("factures", facture.getStorageName());;
+			if (!isOwner && !isAdmin && !(isGarageAdmin && isClientOfGarage))
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-	        return ResponseEntity.ok()
-	                .contentType(MediaType.parseMediaType(facture.getDocumentType()))
-	                .header(HttpHeaders.CONTENT_DISPOSITION,
-	                        "attachment; filename=\"" + facture.getDocumentNom() + "\"")
-	                .body(resource);
+			Resource resource = storage.load("factures", facture.getStorageName());
+			;
+
+			return ResponseEntity.ok().contentType(MediaType.parseMediaType(facture.getDocumentType()))
+					.header(HttpHeaders.CONTENT_DISPOSITION,
+							"attachment; filename=\"" + facture.getDocumentNom() + "\"")
+					.body(resource);
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().build();
 		}

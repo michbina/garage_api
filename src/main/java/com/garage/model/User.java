@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Transient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,24 +35,9 @@ public class User {
 	@Column(nullable = false)
 	private String password;
 
-	private String role;
-
-	// Méthode pour obtenir le rôle sous forme d'enum
-	public Role getRoleEnum() {
-		if (role == null || role.isEmpty()) {
-			return null; // ou une valeur par défaut
-		}
-		return Role.valueOf(role);
-	}
-
-	// Méthode pour définir le rôle à partir d'un enum
-	public void setRoleEnum(Role roleEnum) {
-		if (roleEnum != null) {
-			this.role = roleEnum.name();
-		} else {
-			this.role = null;
-		}
-	}
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Role role;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Facture> factures;
@@ -64,8 +51,8 @@ public class User {
 	@Column(nullable = false)
 	private Boolean active = true;
 
-	@Transient
-	private List<Role> roles;
+//	@Transient
+//	private List<Role> roles;
 
 	@Column(nullable = false)
 	private Boolean firstLogin;
@@ -82,17 +69,15 @@ public class User {
 	public void setGarageIds(List<Long> garageIds) {
 		this.garageIds = garageIds;
 	}
-	
-	public List<Long> getGarageIds() {
-		 if (garageIds != null) {
-		        return garageIds;
-		    }
-	    if (garages == null)
-	        return new ArrayList<>();
 
-	    return garages.stream()
-	            .map(Garage::getId)
-	            .toList();
+	public List<Long> getGarageIds() {
+		if (garageIds != null) {
+			return garageIds;
+		}
+		if (garages == null)
+			return new ArrayList<>();
+
+		return garages.stream().map(Garage::getId).toList();
 	}
 
 }
