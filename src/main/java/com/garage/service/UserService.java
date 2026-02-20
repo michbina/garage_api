@@ -74,7 +74,7 @@ public class UserService implements UserDetailsService {
 		User newUser = new User();
 		newUser.setUsername(registerRequest.getUsername());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-		newUser.setRole(Role.ROLE_USER);
+		newUser.setRole(Role.ROLE_CLIENT);
 		newUser.setFactures(new ArrayList<>());
 		newUser.setDevis(new ArrayList<>());
 		newUser.setActive(true);
@@ -90,7 +90,7 @@ public class UserService implements UserDetailsService {
 
 	// Ajouter ces méthodes à votre UserService existant
 	public List<User> findAllClients() {
-		return userRepository.findByRole(Role.ROLE_USER);
+		return userRepository.findByRole(Role.ROLE_CLIENT);
 	}
 
 	public User findById(Long id) {
@@ -144,6 +144,6 @@ public class UserService implements UserDetailsService {
 	}
 	
 	public List<User> findClientsByGarageIds(List<Long> garageIds) {
-	    return userRepository.findByGarages_IdInAndRole(garageIds, Role.ROLE_USER);
+	    return userRepository.findByGarages_IdInAndRole(garageIds, Role.ROLE_CLIENT);
 	}
 }

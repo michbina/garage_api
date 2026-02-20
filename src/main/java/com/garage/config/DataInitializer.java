@@ -62,7 +62,7 @@ public class DataInitializer {
 				User user = new User();
 				user.setUsername("client");
 				user.setPassword(passwordEncoder.encode("password"));
-				user.setRole(Role.ROLE_USER);
+				user.setRole(Role.ROLE_CLIENT);
 				user.setFactures(new ArrayList<>());
 				user.setDevis(new ArrayList<>());
 				userService.saveUserWithGarages(user);

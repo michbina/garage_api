@@ -14,6 +14,9 @@
             <ul>
                 <li><a th:href="@{/admin}">Dashboard</a></li>
                 <li><a th:href="@{/admin/clients}">Clients</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+    				<a th:href="@{/admin/garages}">Garages</a>
+				</li>
                 <li><a th:href="@{/admin/factures/create}">Ajouter Facture</a></li>
                 <li><a th:href="@{/admin/devis/create}">Ajouter Devis</a></li>
                 <li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>

@@ -94,15 +94,25 @@ public class AdminController {
 			List<Garage> garages = currentUser.getGarages();
 			if (garages == null)
 				garages = new ArrayList<>();
-			// Filtre les utilisateurs pour ne garder que ceux avec le rôle ROLE_USER
+			// Filtre les utilisateurs pour ne garder que ceux avec le rôle ROLE_CLIENT
 			clients = userService.findByGaragesIn(garages).stream()
-					.filter(u -> u.getRole() != null && u.getRole() == Role.ROLE_USER).toList();
+					.filter(u -> u.getRole() != null && u.getRole() == Role.ROLE_CLIENT).toList();
 		}
 
 		ModelAndView mav = new ModelAndView("admin/clients");
 		mav.addObject("clients", clients);
 
 		return mav;
+	}
+	
+	@GetMapping("/admin/garages")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ModelAndView listGarages(Authentication authentication) {
+	    logger.info("Affichage de la liste des garages (admin uniquement)");
+	    List<Garage> garages = garageService.findAllGarages();
+	    ModelAndView mav = new ModelAndView("admin/garages");
+	    mav.addObject("garages", garages);
+	    return mav;
 	}
 
 	// ======== FORMULAIRE DE CRÉATION UTILISATEUR ========
@@ -124,7 +134,7 @@ public class AdminController {
 			roles = Role.values();
 		} else if (currentUser.getRole() == Role.ROLE_GARAGE_ADMIN) {
 			garages = currentUser.getGarages() != null ? currentUser.getGarages() : new ArrayList<>();
-			roles = new Role[] { Role.ROLE_USER };
+			roles = new Role[] { Role.ROLE_CLIENT };
 		}
 
 //        List<Garage> garages = new ArrayList<>(garageService.findAllGarages());
@@ -155,8 +165,8 @@ public class AdminController {
 
 		// Restriction pour GARAGE_ADMIN
 		if (currentUser.getRole() == Role.ROLE_GARAGE_ADMIN) {
-			// Forcer le rôle à ROLE_USER
-			user.setRole(Role.ROLE_USER);
+			// Forcer le rôle à ROLE_CLIENT
+			user.setRole(Role.ROLE_CLIENT);
 			// Restreindre les garages à ceux du garage_admin
 			List<Long> allowedGarageIds = currentUser.getGarages().stream().map(Garage::getId).toList();
 			List<Long> requestedGarageIds = user.getGarageIds();
@@ -235,9 +245,9 @@ public class AdminController {
 			List<Garage> garages = user.getGarages();
 			if (garages == null)
 				garages = new ArrayList<>();
-			// Filtre les utilisateurs pour ne garder que ceux avec le rôle ROLE_USER
+			// Filtre les utilisateurs pour ne garder que ceux avec le rôle ROLE_CLIENT
 			return userService.findByGaragesIn(garages).stream()
-					.filter(u -> u.getRole() != null && u.getRole() == Role.ROLE_USER).toList();
+					.filter(u -> u.getRole() != null && u.getRole() == Role.ROLE_CLIENT).toList();
 		} else {
 			logger.info("Autres rôles : aucun client accessible");
 			return new ArrayList<>();

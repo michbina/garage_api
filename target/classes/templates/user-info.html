@@ -20,8 +20,8 @@
         </div>
         
         <div class="nav-buttons">
-            <a th:if="${user.role == 'ROLE_USER'}" th:href="@{/factures}" class="btn btn-primary">Mes factures</a>
-            <a th:if="${user.role == 'ROLE_USER'}" th:href="@{/devis}" class="btn btn-primary">Mes devis</a>
+            <a th:if="${user.role == 'ROLE_CLIENT'}" th:href="@{/factures}" class="btn btn-primary">Mes factures</a>
+            <a th:if="${user.role == 'ROLE_CLIENT'}" th:href="@{/devis}" class="btn btn-primary">Mes devis</a>
             <a th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }" th:href="@{/admin}" class="btn btn-primary">Retour au dashboard</a>
         </div>
     </div>
