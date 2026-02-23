@@ -27,7 +27,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
         User user = userService.findByUsername(username);
-        if (user.getFirstLogin()) {
+        if (user.isFirstLogin()) {
             // Rediriger vers page changer mot de passe
             this.setDefaultTargetUrl("/change-password");
         } else {

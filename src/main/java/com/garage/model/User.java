@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.annotation.Transient;
+import jakarta.persistence.Transient;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,14 +48,11 @@ public class User {
 	@Column
 	private LocalDate dateInscription = LocalDate.now();
 
-	@Column(nullable = false)
-	private Boolean active = true;
+	@Column(name = "active", nullable = false)
+	private boolean active = true;
 
-//	@Transient
-//	private List<Role> roles;
-
-	@Column(nullable = false)
-	private Boolean firstLogin;
+	@Column(name = "first_login", nullable = false)
+	private boolean firstLogin = false;
 
 	@ManyToMany
 	@JoinTable(name = "user_garages", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "garage_id"))

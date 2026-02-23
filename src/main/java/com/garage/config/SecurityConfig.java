@@ -14,10 +14,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http,CustomSuccessHandler successHandler) throws Exception {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http, CustomSuccessHandler successHandler) throws Exception {
 		http
 				// Configuration des règles d'autorisation
 				.authorizeHttpRequests(authorize -> authorize
@@ -60,8 +60,8 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
+    @Bean
+    PasswordEncoder passwordEncoder() {
 	    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 }

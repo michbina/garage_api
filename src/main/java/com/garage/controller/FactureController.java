@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,9 @@ public class FactureController {
 	private GarageRepository garageRepository;
 
 	private DocumentStorage storage;
+	
+	@Value("${s3.bucket.factures}")
+	private String facturesBucket;
 
 	public FactureController(FactureService factureService, UserService userService, GarageService garageService,
 			UserRepository userRepository, GarageRepository garageRepository, DocumentStorage storage) {

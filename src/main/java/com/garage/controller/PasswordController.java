@@ -31,7 +31,7 @@ public class PasswordController {
 		boolean firstLogin = false;
 		if (authentication != null) {
 			User user = userService.findByUsername(authentication.getName());
-			firstLogin = user.getFirstLogin(); // true si première connexion
+			firstLogin = user.isFirstLogin(); // true si première connexion
 		}
 
 		model.addAttribute("firstLogin", firstLogin);
@@ -39,12 +39,12 @@ public class PasswordController {
 	}
 
 	@PostMapping("/save-new-password")
-	public String saveNewPassword(@Valid @ModelAttribute("passwordDto") PasswordDto passwordDto,
+	public String saveNewPassword(@Valid @ModelAttribute PasswordDto passwordDto,
 			BindingResult bindingResult, Authentication authentication, Model model, // <--- ajouter
 			RedirectAttributes redirectAttributes) {
 
 		User user = userService.findByUsername(authentication.getName());
-		boolean firstLogin = user.getFirstLogin(); // passer au template
+		boolean firstLogin = user.isFirstLogin(); // passer au template
 		model.addAttribute("firstLogin", firstLogin);
 
 		// Validation
