@@ -13,8 +13,8 @@
 					Gestion<i class="fa fa-caret-down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a th:href="@{/admin/factures/create}">Ajouter une facture</a> <a
-						th:href="@{/admin/devis/create}">Ajouter un devis</a>
+					<a th:href="@{/admin/factures/create}">Ajouter une facture</a> 
+					<a th:href="@{/admin/devis/create}">Ajouter un devis</a>
 				</div>
 			</div>
 			<div class="dropdown">
@@ -22,15 +22,11 @@
 					Configuration<i class="fa fa-caret-down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-						th:href="@{/admin/user/create}">Créer utilisateur </a> <a
-						th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-						th:href="@{/admin/garage/create}">Créer un garage </a> <a
-						th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-						th:href="@{/admin/banner/create}">Créer une bannière </a> <a
-						th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-						th:href="@{/admin/garages}">Mes garages</a> <a
-						th:href="@{/admin/clients}">Mes clients</a>
+					 <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/garages}">Mes garages</a> 
+					 <a th:href="@{/admin/clients}">Mes clients</a>
+					<a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/user/create}">Créer utilisateur </a> 
+					<a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/garage/create}">Créer un garage </a> 	
+					<a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/banner/create}">Créer une bannière </a>
 				</div>
 			</div>
 			<div class="dropdown">
@@ -38,9 +34,9 @@
 					Mon compte<i class="fa fa-caret-down"></i>
 				</button>
 				<div class="dropdown-content">
-					<a th:href="@{/api/user/info}">Informations</a> <a
-						th:href="@{/change-password}">Changer de mot de passe</a> <a
-						th:href="@{/logout}">Déconnexion</a>
+					<a th:href="@{/api/user/info}">Informations</a> 
+					<a th:href="@{/change-password}">Changer de mot de passe</a> 
+					<a th:href="@{/logout}">Déconnexion</a>
 				</div>
 			</div>
 		</div>
