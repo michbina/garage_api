@@ -1,5 +1,6 @@
 package com.garage.controller;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,8 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.garage.config.StorageProperties;
 import com.garage.model.Devis;
-import com.garage.model.Facture;
 import com.garage.model.Garage;
 import com.garage.model.Role;
 import com.garage.model.User;
@@ -35,6 +37,7 @@ import com.garage.repository.UserRepository;
 import com.garage.service.DevisService;
 import com.garage.service.GarageService;
 import com.garage.service.UserService;
+import com.garage.storage.DocumentCategory;
 import com.garage.storage.DocumentStorage;
 
 @Controller
@@ -53,18 +56,22 @@ public class DevisController {
 	private GarageRepository garageRepository;
 
 	private DocumentStorage storage;
-	
+
+	private StorageProperties storageProperties;
+
 	@Value("${s3.bucket.devis}")
 	private String devisBucket;
 
 	public DevisController(DevisService devisService, UserService userService, GarageService garageService,
-			UserRepository userRepository, GarageRepository garageRepository, DocumentStorage storage) {
+			UserRepository userRepository, GarageRepository garageRepository, DocumentStorage storage,
+			StorageProperties storageProperties) {
 		this.devisService = devisService;
 		this.userService = userService;
 		this.garageService = garageService;
 		this.userRepository = userRepository;
 		this.garageRepository = garageRepository;
 		this.storage = storage;
+		this.storageProperties = storageProperties;
 	}
 
 	@GetMapping("/devis")
@@ -78,14 +85,14 @@ public class DevisController {
 	// ======== GESTION DES DEVIS ========
 
 	@GetMapping("/admin/devis/create")
-	public ModelAndView showCreateDevisForm(@RequestParam(required = false) Long userId,Authentication auth) {
+	public ModelAndView showCreateDevisForm(@RequestParam(required = false) Long userId, Authentication auth) {
 		logger.info("Affichage du formulaire de création de devis");
-		
+
 		Devis devis = new Devis();
-	    if (userId != null) {
-	        User client = userService.findById(userId);
-	        devis.setUser(client);
-	    }
+		if (userId != null) {
+			User client = userService.findById(userId);
+			devis.setUser(client);
+		}
 
 		String username = auth.getName();
 		User user = userRepository.findByUsername(username).get();
@@ -93,11 +100,11 @@ public class DevisController {
 		List<User> clients = new ArrayList<>();
 
 		List<Garage> garages;
-		if (user.getRole()==Role.ROLE_ADMIN) {
+		if (user.getRole() == Role.ROLE_ADMIN) {
 			// Admin global : accès à tous
 			garages = new ArrayList<>(garageService.findAllGarages());
 			clients = userService.findAllClients();
-		} else if (user.getRole()==Role.ROLE_GARAGE_ADMIN) {
+		} else if (user.getRole() == Role.ROLE_GARAGE_ADMIN) {
 			// Garage admin : accès à ses garages
 			List<Long> garageIds = user.getGarageIds();
 			garages = garageRepository.findAllById(garageIds);
@@ -115,16 +122,17 @@ public class DevisController {
 	}
 
 	@PostMapping("/admin/devis/create")
-	public String createDevis(@ModelAttribute Devis devis, @RequestParam Long clientId, @RequestParam Long garageId,
+	public String createDevis(@ModelAttribute Devis devis, @RequestParam Long garageId,
 			@RequestParam(required = true) MultipartFile document, RedirectAttributes redirectAttributes,
 			Authentication authentication) {
-		logger.info("Création d'un devis pour le client ID: {}", clientId);
 
 		try {
+			Long clientId = devis.getUser().getId();
+			logger.info("Création d'un devis pour le client ID: {}", clientId);
 			User user = userService.findByUsername(authentication.getName());
 
 			// Vérification pour les garage admins
-			if (user.getRole()==Role.ROLE_GARAGE_ADMIN) {
+			if (user.getRole() == Role.ROLE_GARAGE_ADMIN) {
 				List<Long> garageIds = user.getGarageIds();
 				if (!garageIds.contains(garageId)) {
 					redirectAttributes.addFlashAttribute("errorMessage", "Accès refusé à ce garage.");
@@ -150,30 +158,12 @@ public class DevisController {
 			// Traitement du document si présent
 			if (document != null && !document.isEmpty()) {
 
-				String storageName = storage.save(document, "devis");
+				String storageName = storage.uploadFile(document, DocumentCategory.DEVIS);
 				devis.setStorageName(storageName);
 				devis.setDocumentNom(document.getOriginalFilename());
 				devis.setDocumentType(document.getContentType());
 
 				String fileName = StringUtils.cleanPath(document.getOriginalFilename());
-//				String uploadDir = "uploads/factures/";
-//				Path uploadPath = Paths.get(uploadDir);
-//
-//				if (!Files.exists(uploadPath)) {
-//					Files.createDirectories(uploadPath);
-//				}
-//
-//				// Générer un nom de fichier unique
-//				String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-//				Path filePath = uploadPath.resolve(uniqueFileName);
-//
-//				// Enregistrer le fichier
-//				Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//				// Enregistrer le chemin dans la facture
-//				devis.setDocumentNom(fileName);
-//				devis.setDocumentPath(filePath.toString());
-//				devis.setDocumentType(document.getContentType());
 
 				logger.info("Document ajouté au devis: {}", fileName);
 			}
@@ -226,25 +216,23 @@ public class DevisController {
 
 			// 🔐 Sécurité
 			boolean isOwner = devis.getUser().getId().equals(currentUser.getId());
-			boolean isAdmin = currentUser.getRole()==Role.ROLE_ADMIN;
+			boolean isAdmin = currentUser.getRole() == Role.ROLE_ADMIN;
 			boolean isGarageAdmin = currentUser.getRole() == Role.ROLE_GARAGE_ADMIN;
 			boolean isClientOfGarage = false;
-			
+
 			if (isGarageAdmin) {
-			    List<Long> garageIds = currentUser.getGarageIds();
-			    List<Garage> clientGarages = devis.getUser().getGarages();
-			    if (clientGarages != null) {
-			        isClientOfGarage = clientGarages.stream()
-			            .map(Garage::getId)
-			            .anyMatch(garageIds::contains);
-			    }
+				List<Long> garageIds = currentUser.getGarageIds();
+				List<Garage> clientGarages = devis.getUser().getGarages();
+				if (clientGarages != null) {
+					isClientOfGarage = clientGarages.stream().map(Garage::getId).anyMatch(garageIds::contains);
+				}
 			}
 
 			if (!isOwner && !isAdmin && !(isGarageAdmin && isClientOfGarage))
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-			Resource resource = storage.load("devis", devis.getStorageName());
-			;
+			InputStream inputStream = storage.downloadFile(DocumentCategory.DEVIS, devis.getStorageName());
+			InputStreamResource resource = new InputStreamResource(inputStream);
 
 			return ResponseEntity.ok().contentType(MediaType.parseMediaType(devis.getDocumentType()))
 					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + devis.getDocumentNom() + "\"")

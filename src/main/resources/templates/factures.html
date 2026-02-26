@@ -1,46 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Mes Factures - Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Mes Factures - Garage</title>
 </head>
 <body>
-    <div class="container">
-    	<div th:replace="~{menu-user :: mainMenuUser}"></div>
-        
-        <h1>Mes Factures</h1>
-        
-        <div th:if="${factures.empty}" class="alert">
-            Vous n'avez aucune facture pour le moment.
-        </div>
-        
-        <table th:if="${!factures.empty}" class="table">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Montant</th>
-                    <th>Date</th>
-                    <th>Documents</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="facture : ${factures}">
-                    <td th:text="${facture.description}"></td>
-                    <td th:text="${facture.montant} + ' €'"></td>
-                    <td th:text="${#temporals.format(facture.dateCreation, 'dd/MM/yyyy')}"></td>
-                    <td>
-								<!-- Afficher un lien de téléchargement si un document est attaché -->
-								<a th:if="${facture.documentNom != null}"
-								th:href="@{/factures/{id}/document(id=${facture.id})}"
-								class="btn btn-small btn-info"> <i class="fas fa-download"></i>
-									Voir ma facture
-							</a> <span th:unless="${facture.documentNom != null}">Aucune
-									facture</span>
+	<section layout:fragment="content">
+		<!-- 	<div class="container"> -->
+		<!-- 		<div th:replace="~{menu-user :: mainMenuUser}"></div> -->
+
+		<h1>Mes Factures</h1>
+
+		<div th:if="${factures.empty}" class="alert">Vous n'avez aucune
+			facture pour le moment.</div>
+
+		<table th:if="${!factures.empty}" class="table">
+			<thead>
+				<tr>
+					<th>Description</th>
+					<th>Montant</th>
+					<th>Date</th>
+					<th>Documents</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="facture : ${factures}">
+					<td th:text="${facture.description}"></td>
+					<td th:text="${facture.montant} + ' €'"></td>
+					<td
+						th:text="${#temporals.format(facture.dateCreation, 'dd/MM/yyyy')}"></td>
+					<td>
+						<!-- Afficher un lien de téléchargement si un document est attaché -->
+						<a th:if="${facture.documentNom != null}"
+						th:href="@{/factures/{id}/document(id=${facture.id})}"
+						class="btn btn-small btn-info"> <i class="fas fa-download"></i>
+							Voir ma facture
+					</a> <span th:unless="${facture.documentNom != null}">Aucune
+							facture</span>
 					</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+				</tr>
+			</tbody>
+		</table>
+		<!-- 	</div> -->
+	</section>
 </body>
 </html>

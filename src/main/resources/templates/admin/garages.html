@@ -1,56 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Gestion des Garages - Administration Garage</title>
-    <!-- CSS globaux -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <!-- CSS spécifique à la page clients -->
-    <link rel="stylesheet" th:href="@{/css/clients.css}">
+<title>Gestion des Garages - Administration Garage</title>
 </head>
 <body>
-    <div class="container">
-         <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
-        
-        <h1>Gestion des Garages</h1>
-        
-        <!-- Message d'erreur ou de succès éventuel -->
-        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}">
-            Erreur
-        </div>
-        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
-            Succès
-        </div>
-        
-         <!-- Barre de recherche -->
-        <div class="search-container">
-            <input type="text" id="garageSearch" class="search-input" placeholder="Rechercher un garage..." onkeyup="filterGarages()">
-            <button class="btn btn-primary" onclick="resetGarageSearch()">Réinitialiser</button>
-        </div>
-        
-         <div th:if="${garages == null || #lists.isEmpty(garages)}" class="alert">
-            Aucun garage enregistré pour le moment.
-        </div>
-        
-         <div th:if="${garages != null && !#lists.isEmpty(garages)}">
-            <table class="table" id="garagesTable">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Adresse</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="garage : ${garages}" class="garage-row">
-                        <td th:text="${garage.name}">Nom</td>
-                        <td th:text="${garage.location}">Adresse</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-    </div>
-    <!-- JavaScript spécifique à la page garages -->
-    <script th:src="@{/js/garages.js}"></script>
+	<section layout:fragment="content">
+		<!-- 	<div class="container"> -->
+		<!-- 		<div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div> -->
+
+		<h1>Gestion des Garages</h1>
+
+		<!-- Message d'erreur ou de succès éventuel -->
+		<div th:if="${errorMessage != null}" class="alert alert-danger"
+			th:text="${errorMessage}">Erreur</div>
+		<div th:if="${successMessage != null}" class="alert alert-success"
+			th:text="${successMessage}">Succès</div>
+
+		<!-- Barre de recherche -->
+		<div class="search-container">
+			<input type="text" id="garageSearch" class="search-input"
+				placeholder="Rechercher un garage..." onkeyup="filterGarages()">
+			<button class="btn btn-primary" onclick="resetGarageSearch()">Réinitialiser</button>
+		</div>
+
+		<div th:if="${garages == null || #lists.isEmpty(garages)}"
+			class="alert">Aucun garage enregistré pour le moment.</div>
+
+		<div th:if="${garages != null && !#lists.isEmpty(garages)}">
+			<table class="table" id="garagesTable">
+				<thead>
+					<tr>
+						<th>Nom</th>
+						<th>Adresse</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="garage : ${garages}" class="garage-row">
+						<td th:text="${garage.name}">Nom</td>
+						<td th:text="${garage.location}">Adresse</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- 	</div> -->
+	</section>
+	<!-- JavaScript spécifique à la page garages -->
+	<script th:src="@{/js/garages.js}"></script>
 </body>
 </html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$CONTENT_TITLE | Mon Garage">Mon
+	Garage</title>
+
+<!-- TOUS les CSS sont centralisés ici. Une seule fois. -->
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/banner.css}">
+<link rel="stylesheet" th:href="@{/css/clients.css}">
+<link rel="stylesheet" th:href="@{/css/clients-details.css}">
+<link rel="stylesheet" th:href="@{/css/clients-devis.css}">
+<link rel="stylesheet" th:href="@{/css/dashboard.css}">
+<link rel="stylesheet" th:href="@{/css/banner_fragment.css}">
+<!-- Ajout du CSS pour les clients -->
+</head>
+<body>
+	<header>
+		<!-- On centralise la logique d'affichage du menu ici -->
+		<!-- Le menu ne s'affiche PAS si c'est la première connexion -->
+		<div th:if="${firstLogin == null or !firstLogin}">
+
+			<!-- Condition 1 : SI l'utilisateur a le rôle 'ADMIN' OU 'GARAGE_ADMIN', on affiche le menu admin. -->
+			<th:block
+				th:if="${#authorization.expression('hasAnyRole(''ADMIN'', ''GARAGE_ADMIN'')')}">
+				<div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
+			</th:block>
+
+			<!-- Condition 2 : SINON, SI l'utilisateur a le rôle 'USER' (et n'est pas un admin), on affiche le menu user. -->
+			<th:block
+				th:if="${#authorization.expression('hasRole(''CLIENT'') and !hasAnyRole(''ADMIN'', ''GARAGE_ADMIN'')')}">
+				<div th:replace="~{menu-user :: mainMenuUser}"></div>
+			</th:block>
+
+
+
+		</div>
+	</header>
+
+	<main class="container">
+		<!-- Le contenu spécifique de chaque page viendra s'insérer ici -->
+		<section layout:fragment="content"></section>
+	</main>
+
+	<footer
+		style="text-align: center; margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem;">
+		<p>&copy; 2024 Mon Garage</p>
+	</footer>
+</body>
+</html>

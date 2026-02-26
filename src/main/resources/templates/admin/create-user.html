@@ -1,45 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Créer un utilisateur - Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Créer un utilisateur - Garage</title>
 </head>
 <body>
-    <div class="container">
-         <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
-        
-        <h1>Créer un nouvel utilisateur</h1>
-        <form th:action="@{/admin/user/create}" method="post" th:object="${user}" >
-            
-           <div class="form-group">
-                <label for="username">Nom d'utilisateur:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Mot de passe:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            
-            <div class="form-group">
-	             <select id="role" name="role" th:field="*{role}" required>
-				    <option th:each="role : ${roles}" th:value="${role.name()}"
-				            th:text="${role.name()}"
-				            th:selected="*{role} == ${role.name()}">
-				    </option>
+
+	<section layout:fragment="content">
+		<!--     <div class="container"> -->
+		<!--          <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div> -->
+
+		<h1>Créer un nouvel utilisateur</h1>
+		<form th:action="@{/admin/user/create}" method="post"
+			th:object="${user}">
+
+			<div class="form-group">
+				<label for="username">Nom d'utilisateur:</label> <input type="text"
+					id="username" name="username" required>
+			</div>
+
+			<div class="form-group">
+				<label for="password">Mot de passe:</label> <input type="password"
+					id="password" name="password" required>
+			</div>
+
+			<div class="form-group">
+				<select id="role" name="role" th:field="*{role}" required>
+					<option th:each="role : ${roles}" th:value="${role.name()}"
+						th:text="${role.name()}" th:selected="*{role} == ${role.name()}">
+					</option>
 				</select>
 			</div>
-			
+
 			<div class="form-group">
-			    <label for="garages">Affecter les garages :</label>
-			    <select id="garages" name="garageIds" multiple th:field="*{garageIds}" required>
-			        <option th:each="garage : ${garages}" th:value="${garage.id}" th:text="${garage.name}"></option>
-			    </select>
+				<label for="garages">Affecter les garages :</label> <select
+					id="garages" name="garageIds" multiple th:field="*{garageIds}"
+					required>
+					<option th:each="garage : ${garages}" th:value="${garage.id}"
+						th:text="${garage.name}"></option>
+				</select>
 			</div>
-            
-            <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
-        </form>
-    </div>
+
+			<button type="submit" class="btn btn-primary">Créer
+				l'utilisateur</button>
+		</form>
+		<!--     </div> -->
+	</section>
 </body>
 </html>

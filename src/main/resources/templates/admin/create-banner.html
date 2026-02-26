@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
+<head>
+<title>Gérer la bannière - Garage</title>
+</head>
+<body>
+	<section layout:fragment="content">
+		<!-- 	<div class="container"> -->
+		<!-- 		<div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div> -->
+
+		<h1>Gérer la Bannière</h1>
+		<!-- AFFICHAGE DES MESSAGES DE SUCCÈS/ -->
+		<div th:if="${successMessage}" th:text="${successMessage}"
+			class="success"></div>
+
+
+
+		<form th:action="@{/admin/banner/upload}" th:object="${bannerForm}"
+			method="post" enctype="multipart/form-data">
+
+			<!-- AFFICHAGE DES MESSAGES Erreurs/ -->
+			<div th:if="${#fields.hasGlobalErrors()}" class="error">
+				<p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+			</div>
+
+			<!-- AFFICHAGE DE L'IMAGE EXISTANTE -->
+			<div th:if="*{existingImageUrl != null}" class="form-group">
+				<label>Image actuelle :</label><br> <img
+					th:src="*{existingImageUrl}" alt="Bannière actuelle"
+					style="max-width: 300px; border: 1px solid #ccc;" />
+			</div>
+
+			<div class="form-group">
+				<label for="message">Message:</label> <input type="text"
+					id="message" placeholder="Message du bandeau" th:field="*{message}"
+					required>
+				<div th:if="${#fields.hasErrors('message')}" th:errors="*{message}"
+					class="error"></div>
+			</div>
+			<div class="form-group">
+				<label for="imageFile">Image de la bannière :</label>
+				<!--Lier le champ au DTO avec th:field. -->
+				<input type="file" id="imageFile" th:field="*{imageFile}"
+					accept=".jpg,.jpeg,.png"> <small
+					th:if="*{existingImageUrl != null}" class="form-text text-muted">Laissez
+					vide pour conserver l'image actuelle.</small>
+				<!-- AFFICHAGE D'ERREUR POUR CE CHAMP -->
+				<div th:if="${#fields.hasErrors('imageFile')}"
+					th:errors="*{imageFile}" class="error"></div>
+			</div>
+			<div class="form-group">
+				<label> <input type="checkbox" th:field="*{enabled}">
+					Activer la bannière
+				</label>
+			</div>
+			<button type="submit">Ajouter la bannière</button>
+		</form>
+		<!-- 	</div> -->
+	</section>
+</body>
+</html>

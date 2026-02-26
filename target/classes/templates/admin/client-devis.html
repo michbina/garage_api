@@ -1,132 +1,141 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Devis Client - Administration Garage</title>
-     <!-- CSS globaux -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <!-- CSS spécifique à la page client-devis -->
-    <link rel="stylesheet" th:href="@{/css/clients.css}">
+<title>Devis Client - Administration Garage</title>
 </head>
 <body>
-    <div class="container">
-        <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
-        
-        <!-- Message d'erreur éventuel -->
-        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}">
-            Erreur
-        </div>
-        
-        <!-- Infos client -->
-        <div th:if="${client != null}" class="client-info">
-            <h1>Devis de <span th:text="${client.username}">nomclient</span></h1>
-            <div class="client-details">
-                <p><strong>ID Client:</strong> <span th:text="${client.id}">1</span></p>
-                <p><strong>Nom d'utilisateur:</strong> <span th:text="${client.username}">nomclient</span></p>
-            </div>
-            
-            <!-- Actions rapides -->
-            <div class="action-buttons">
-                <a th:href="@{/admin/client/{id}/factures(id=${client.id})}" class="btn btn-secondary">Voir les factures</a>
-                <a th:href="@{/admin/devis/create(userId=${client.id})}" class="btn btn-primary">Ajouter un devis</a>
-            </div>
-        </div>
-        
-        <!-- Message si client introuvable -->
-        <div th:if="${client == null}" class="alert">
-            Client introuvable
-        </div>
-        
-        <!-- Liste des devis -->
-        <div th:if="${client != null}">
-            <!-- Message si aucun devis -->
-            <div th:if="${devis == null || #lists.isEmpty(devis)}" class="alert">
-                Ce client n'a aucun devis pour le moment.
-            </div>
-            
-            <!-- Tableau des devis -->
-            <div th:if="${devis != null && !#lists.isEmpty(devis)}">
-                <h2>Liste des devis</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Description</th>
-                            <th>Montant</th>
-                            <th>Date</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                            <th>Documents</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="d : ${devis}">
-                            <td th:text="${d.id}">1</td>
-                            <td th:text="${d.description}">Description devis</td>
-                            <td th:text="${d.montant} + ' €'">100.00 €</td>
-                            <td th:text="${#temporals.format(d.dateCreation, 'dd/MM/yyyy')}">01/01/2025</td>
-                            <td>
-                                <!-- Affichage conditionnel selon le statut -->
-                                <span th:if="${d.statut != null && d.statut.name() == 'EN_ATTENTE'}" class="status status-pending">En attente</span>
-                                <span th:if="${d.statut != null && d.statut.name() == 'VALIDE'}" class="status status-approved">Validé</span>
-                                <span th:if="${d.statut != null && d.statut.name() == 'ANNULE'}" class="status status-cancelled">Annulé</span>
-                            </td>
-                            <td>
-                                <!-- Boutons d'action -->
-                                <a href="#" class="btn btn-small">Voir détails</a>
-                                
-                                
-                                <!-- Bouton pour annuler un devis en attente -->
-                                <a th:if="${d.statut != null && d.statut.name() == 'EN_ATTENTE'}" 
-                                   th:href="@{/admin/devis/{id}/annuler(id=${d.id})}" 
-                                   class="btn btn-small btn-warning"
-                                   onclick="return confirm('Êtes-vous sûr de vouloir annuler ce devis?')">Annuler</a>
-                                
-                            </td>
-                            <td>
+<section layout:fragment="content">
+<!-- 	<div class="container"> -->
+<!-- 		<div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div> -->
+
+		<!-- Message d'erreur éventuel -->
+		<div th:if="${errorMessage != null}" class="alert alert-danger"
+			th:text="${errorMessage}">Erreur</div>
+
+		<!-- Infos client -->
+		<div th:if="${client != null}" class="client-info">
+			<h1>
+				Devis de <span th:text="${client.username}">nomclient</span>
+			</h1>
+			<div class="client-details">
+				<p>
+					<strong>ID Client:</strong> <span th:text="${client.id}">1</span>
+				</p>
+				<p>
+					<strong>Nom d'utilisateur:</strong> <span
+						th:text="${client.username}">nomclient</span>
+				</p>
+			</div>
+
+			<!-- Actions rapides -->
+			<div class="action-buttons">
+				<a th:href="@{/admin/client/{id}/factures(id=${client.id})}"
+					class="btn btn-secondary">Voir les factures</a> <a
+					th:href="@{/admin/devis/create(userId=${client.id})}"
+					class="btn btn-primary">Ajouter un devis</a>
+			</div>
+		</div>
+
+		<!-- Message si client introuvable -->
+		<div th:if="${client == null}" class="alert">Client introuvable
+		</div>
+
+		<!-- Liste des devis -->
+		<div th:if="${client != null}">
+			<!-- Message si aucun devis -->
+			<div th:if="${devis == null || #lists.isEmpty(devis)}" class="alert">
+				Ce client n'a aucun devis pour le moment.</div>
+
+			<!-- Tableau des devis -->
+			<div th:if="${devis != null && !#lists.isEmpty(devis)}">
+				<h2>Liste des devis</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Description</th>
+							<th>Montant</th>
+							<th>Date</th>
+							<th>Statut</th>
+							<th>Actions</th>
+							<th>Documents</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="d : ${devis}">
+							<td th:text="${d.id}">1</td>
+							<td th:text="${d.description}">Description devis</td>
+							<td th:text="${d.montant} + ' €'">100.00 €</td>
+							<td th:text="${#temporals.format(d.dateCreation, 'dd/MM/yyyy')}">01/01/2025</td>
+							<td>
+								<!-- Affichage conditionnel selon le statut --> <span
+								th:if="${d.statut != null && d.statut.name() == 'EN_ATTENTE'}"
+								class="status status-pending">En attente</span> <span
+								th:if="${d.statut != null && d.statut.name() == 'VALIDE'}"
+								class="status status-approved">Validé</span> <span
+								th:if="${d.statut != null && d.statut.name() == 'ANNULE'}"
+								class="status status-cancelled">Annulé</span>
+							</td>
+							<td>
+								<!-- Boutons d'action --> <a href="#" class="btn btn-small">Voir
+									détails</a> <!-- Bouton pour annuler un devis en attente --> <a
+								th:if="${d.statut != null && d.statut.name() == 'EN_ATTENTE'}"
+								th:href="@{/admin/devis/{id}/annuler(id=${d.id})}"
+								class="btn btn-small btn-warning"
+								onclick="return confirm('Êtes-vous sûr de vouloir annuler ce devis?')">Annuler</a>
+
+							</td>
+							<td>
 								<!-- Afficher un lien de téléchargement si un document est attaché -->
 								<a th:if="${d.documentNom != null}"
 								th:href="@{/devis/{id}/document(id=${d.id})}"
 								class="btn btn-small btn-info"> <i class="fas fa-download"></i>
 									Document
-							</a> <span th:unless="${d.documentNom != null}">Aucun
-									document</span>
+							</a> <span th:unless="${d.documentNom != null}">Aucun document</span>
 							</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <!-- Résumé des devis -->
-                <div class="devis-summary">
-                    <h3>Résumé des devis</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <span class="summary-label">Nombre total de devis:</span>
-                            <span class="summary-value" th:text="${devis.size()}">0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Montant total:</span>
-                            <span class="summary-value" th:text="${#aggregates.sum(devis.![montant])} + ' €'">0.00 €</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Devis en attente:</span>
-                            <span class="summary-value" th:text="${#lists.size(devis.?[statut != null && statut.name() == 'EN_ATTENTE'])}">0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Devis validés:</span>
-                            <span class="summary-value" th:text="${#lists.size(devis.?[statut != null && statut.name() == 'VALIDE'])}">0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Bouton retour -->
-        <div class="back-button">
-            <a th:href="@{/admin}" class="btn btn-secondary">Retour au tableau de bord</a>
-        </div>
-    </div>
-    <!-- JavaScript spécifique à la page client-devis -->
-    <script th:src="@{/js/clients.js}"></script>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- Résumé des devis -->
+				<div class="devis-summary">
+					<h3>Résumé des devis</h3>
+					<div class="summary-grid">
+						<div class="summary-item">
+							<span class="summary-label">Nombre total de devis:</span> <span
+								class="summary-value" th:text="${devis.size()}">0</span>
+						</div>
+						<div class="summary-item">
+							<span class="summary-label">Montant total:</span> <span
+								class="summary-value"
+								th:text="${#aggregates.sum(devis.![montant])} + ' €'">0.00
+								€</span>
+						</div>
+						<div class="summary-item">
+							<span class="summary-label">Devis en attente:</span> <span
+								class="summary-value"
+								th:text="${#lists.size(devis.?[statut != null && statut.name() == 'EN_ATTENTE'])}">0</span>
+						</div>
+						<div class="summary-item">
+							<span class="summary-label">Devis validés:</span> <span
+								class="summary-value"
+								th:text="${#lists.size(devis.?[statut != null && statut.name() == 'VALIDE'])}">0</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bouton retour -->
+		<div class="back-button">
+			<a th:href="@{/admin}" class="btn btn-secondary">Retour au
+				tableau de bord</a>
+		</div>
+<!-- 	</div> -->
+	</section>
+	<!-- JavaScript spécifique à la page client-devis -->
+	<script th:src="@{/js/clients.js}"></script>
 </body>
 </html>

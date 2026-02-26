@@ -1,60 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Mes Devis - Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Mes Devis - Garage</title>
 </head>
 <body>
-    <div class="container">
-    	<div th:replace="~{menu-user :: mainMenuUser}"></div>
-        
-        <h1>Mes Devis</h1>
-        
-        <div th:if="${devis.empty}" class="alert">
-            Vous n'avez aucun devis pour le moment.
-        </div>
-        
-        
-        <table th:if="${!devis.empty}" class="table">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Montant</th>
-                    <th>Date</th>
-                    <th>Statut</th>
-                    <th>Documents</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="d : ${devis}">
-                    <td th:text="${d.description}"></td>
-                    <td th:text="${d.montant} + ' €'"></td>
-                    <td th:text="${#temporals.format(d.dateCreation, 'dd/MM/yyyy')}"></td>
-                    <td>
-		                <form th:if="${d.statut.name() == 'EN_ATTENTE'}"
-		                      th:action="@{/devis/{id}/valider(id=${d.id})}" method="post">
-		                    <button type="submit" class="btn btn-primary">Valider le devis</button>
-		                </form>
-		                <div th:if="${d.statut.name() == 'VALIDE'}">
-		                	Devis validé
-		                </div>
-           			</td>
-                    <td>
-					<!-- Afficher un lien de téléchargement si un document est attaché -->
-						<a th:if="${d.documentNom != null}"
-									th:href="@{/devis/{id}/document(id=${d.id})}"
-									class="btn btn-small btn-info"> <i class="fas fa-download"></i>
-										Voir mon devis
-								</a> <span th:unless="${d.documentNom != null}">Aucun
-										devis</span>	
+	<section layout:fragment="content">
+		<!-- 		<div class="container"> -->
+		<!-- 			<div th:replace="~{menu-user :: mainMenuUser}"></div> -->
+
+		<h1>Mes Devis</h1>
+
+		<div th:if="${devis.empty}" class="alert">Vous n'avez aucun
+			devis pour le moment.</div>
+
+
+		<table th:if="${!devis.empty}" class="table">
+			<thead>
+				<tr>
+					<th>Description</th>
+					<th>Montant</th>
+					<th>Date</th>
+					<th>Statut</th>
+					<th>Documents</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="d : ${devis}">
+					<td th:text="${d.description}"></td>
+					<td th:text="${d.montant} + ' €'"></td>
+					<td th:text="${#temporals.format(d.dateCreation, 'dd/MM/yyyy')}"></td>
+					<td>
+						<form th:if="${d.statut.name() == 'EN_ATTENTE'}"
+							th:action="@{/devis/{id}/valider(id=${d.id})}" method="post">
+							<button type="submit" class="btn btn-primary">Valider le
+								devis</button>
+						</form>
+						<div th:if="${d.statut.name() == 'VALIDE'}">Devis validé</div>
 					</td>
-                </tr>
-            </tbody>
-        </table>
-        
-    </div>
-    
-    <script th:src="@{/js/signature.js}"></script>
+					<td>
+						<!-- Afficher un lien de téléchargement si un document est attaché -->
+						<a th:if="${d.documentNom != null}"
+						th:href="@{/devis/{id}/document(id=${d.id})}"
+						class="btn btn-small btn-info"> <i class="fas fa-download"></i>
+							Voir mon devis
+					</a> <span th:unless="${d.documentNom != null}">Aucun devis</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- 		</div> -->
+
+
+	</section>
+	<script th:src="@{/js/signature.js}"></script>
 </body>
 </html>

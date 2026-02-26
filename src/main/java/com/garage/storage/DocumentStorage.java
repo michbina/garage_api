@@ -1,14 +1,15 @@
 package com.garage.storage;
 
-import org.springframework.core.io.Resource;
+import java.io.InputStream;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public interface DocumentStorage {
-	
-	String save(MultipartFile file, String folder) throws Exception;
 
-    Resource load(String folder, String filename) throws Exception;
+	String uploadFile(MultipartFile file, DocumentCategory category) throws Exception;
 
-    void delete(String path) throws Exception;
+	InputStream downloadFile(DocumentCategory category, String storageName) throws Exception;
+
+	void delete(DocumentCategory category, String storageName) throws Exception;
 
 }

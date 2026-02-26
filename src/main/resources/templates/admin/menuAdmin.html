@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <title>Devis Client - Administration Garage</title>
-     <!-- CSS globaux -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <!-- CSS spécifique à la page client-devis -->
-    <link rel="stylesheet" th:href="@{/css/clients.css}">
+<meta charset="UTF-8">
+<title>Devis Client - Administration Garage</title>
+<!-- CSS globaux -->
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<!-- CSS spécifique à la page client-devis -->
+<link rel="stylesheet" th:href="@{/css/clients.css}">
 </head>
 <body>
 	<div th:fragment="mainMenuAdmin">
-        <nav>
-            <ul>
-                <li><a th:href="@{/admin}">Dashboard</a></li>
-                <li><a th:href="@{/admin/clients}">Clients</a></li>
-                <li sec:authorize="hasRole('ADMIN')">
-    				<a th:href="@{/admin/garages}">Garages</a>
-				</li>
-                <li><a th:href="@{/admin/factures/create}">Ajouter Facture</a></li>
-                <li><a th:href="@{/admin/devis/create}">Ajouter Devis</a></li>
-                <li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>
-                <li sec:authorize="hasRole('ADMIN')">
-    				<a th:href="@{/admin/garage/create}">Créer un garage</a>
-				</li>
-                <li><a th:href="@{/change-password}">Changer mot de passe</a></li>
-                <li><a th:href="@{/logout}">Déconnexion</a></li>
-                 <li><a th:href="@{/api/user/info}">Mon compte</a></li>
-            </ul>
-        </nav>
-    </div>
-        
-      
+		<div th:replace="~{fragments/banner :: display-banner}"></div>
+		<nav>
+			<ul>
+				<li><a th:href="@{/admin}">Dashboard</a></li>
+				<li><a th:href="@{/admin/clients}">Clients</a></li>
+				<li sec:authorize="hasRole('ADMIN')"><a
+					th:href="@{/admin/garages}">Garages</a></li>
+				<li><a th:href="@{/admin/factures/create}">Ajouter Facture</a></li>
+				<li><a th:href="@{/admin/devis/create}">Ajouter Devis</a></li>
+				<li><a th:href="@{/admin/user/create}">Créer utilisateur</a></li>
+				<li sec:authorize="hasRole('ADMIN')"><a
+					th:href="@{/admin/garage/create}">Créer un garage</a></li>
+				<li sec:authorize="hasRole('ADMIN')"><a
+					th:href="@{/admin/banner/create}">Créer une bannière</a></li>
+				<li><a th:href="@{/change-password}">Changer mot de passe</a></li>
+				<li><a th:href="@{/logout}">Déconnexion</a></li>
+				<li><a th:href="@{/api/user/info}">Mon compte</a></li>
+			</ul>
+		</nav>
+	</div>
+
+
 </body>
 </html>

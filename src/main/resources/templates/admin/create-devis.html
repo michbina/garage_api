@@ -1,50 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Ajouter un devis - Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Ajouter un devis - Garage</title>
 </head>
 <body>
-    <div class="container">
-        <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
-        
-        <h1>Ajouter un nouveau devis</h1>
-        <!-- Utilisation de multipart/form-data pour permettre le téléchargement de fichiers -->
-        <form th:action="@{/admin/devis/create}" method="post" th:object="${devis}" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="clientId">Client:</label>
-                <select th:field="*{user.id}" required>
-				    <option value="">Sélectionner un client</option>
-				     <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.username}"></option>
+	<section layout:fragment="content">
+		<!-- 	<div class="container"> -->
+		<!-- 		<div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div> -->
+
+		<h1>Ajouter un nouveau devis</h1>
+		<!-- Utilisation de multipart/form-data pour permettre le téléchargement de fichiers -->
+		<form th:action="@{/admin/devis/create}" method="post"
+			th:object="${devis}" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="clientId">Client:</label> <select id="clientId"
+					name="clientId" th:field="*{user.id}" required>
+					<option value="">Sélectionner un client</option>
+					<option th:each="client : ${clients}" th:value="${client.id}"
+						th:text="${client.username}"></option>
 				</select>
-            </div>
-            
-            <label for="garageId">Garage:</label>
-			    <select id="garageId" name="garageId" >
-			    	<option value="">Sélectionner un garage</option>
-			        <option th:each="garage : ${garages}" th:value="${garage.id}" th:text="${garage.name}"></option>
-			    </select> 
-            
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <input type="text" id="description" th:field="*{description}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="montant">Montant (€):</label>
-                <input type="number" id="montant" th:field="*{montant}" step="0.01" min="0" required>
-            </div>
-            
-             <!-- Nouveau champ pour le téléchargement de document -->
-            <div class="form-group">
-                <label for="document">Document de devis (PDF, image):</label>
-                <input type="file" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
-                <small class="form-text text-muted">Formats acceptés: PDF, JPG, PNG. Taille max: 5 MB</small>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Ajouter le devis</button>
-        </form>
-    </div>
+			</div>
+
+			<label for="garageId">Garage:</label> <select id="garageId"
+				name="garageId">
+				<option value="">Sélectionner un garage</option>
+				<option th:each="garage : ${garages}" th:value="${garage.id}"
+					th:text="${garage.name}"></option>
+			</select>
+
+			<div class="form-group">
+				<label for="description">Description:</label> <input type="text"
+					id="description" th:field="*{description}" required>
+			</div>
+
+			<div class="form-group">
+				<label for="montant">Montant (€):</label> <input type="number"
+					id="montant" th:field="*{montant}" step="0.01" min="0" required>
+			</div>
+
+			<!-- Nouveau champ pour le téléchargement de document -->
+			<div class="form-group">
+				<label for="document">Document de devis (PDF, image):</label> <input
+					type="file" id="document" name="document"
+					accept=".pdf,.jpg,.jpeg,.png" required> <small
+					class="form-text text-muted">Formats acceptés: PDF, JPG,
+					PNG. Taille max: 5 MB</small>
+			</div>
+
+			<button type="submit" class="btn btn-primary">Ajouter le
+				devis</button>
+		</form>
+		<!-- 	</div> -->
+	</section>
 </body>
 </html>

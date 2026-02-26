@@ -60,6 +60,14 @@ CREATE TABLE user_garages (
   PRIMARY KEY (garage_id, user_id)
 );
 
+CREATE TABLE promotion_banners (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  message VARCHAR(255) DEFAULT NULL,
+  image_url VARCHAR(255) DEFAULT NULL,
+  enabled TINYINT(1) DEFAULT 1,
+  PRIMARY KEY (id)
+);
+
 
 -- Ajout des contraintes sur la table devis
 ALTER TABLE devis

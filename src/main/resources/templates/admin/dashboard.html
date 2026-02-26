@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
     <title>Administration - Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
-    <div class="container">
-       <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div>
+<section layout:fragment="content">
+<!--     <div class="container"> -->
+<!--        <div th:replace="~{admin/menuAdmin :: mainMenuAdmin}"></div> -->
 
         
         <h1>Tableau de bord Administrateur</h1>
@@ -66,6 +66,7 @@
             </div>
             <!-- Vous pouvez ajouter d'autres statistiques ici -->
         </div>
-    </div>
+<!--     </div> -->
+    </section>
 </body>
 </html>

@@ -1,29 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main-layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Mes informations - Garage</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Mes informations - Garage</title>
 </head>
 <body>
-    <div class="container">
-    	<div th:replace="~{menu-user :: mainMenuUser}"></div>
-        
-        <h1>Mes informations</h1>
-        
-        <div class="user-info">
-            <p th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }"><strong>ID:</strong> <span th:text="${user.id}"></span></p>
-            <p><strong>Nom d'utilisateur:</strong> <span th:text="${user.username}"></span></p>
-            <p th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }"><strong>Rôle:</strong> <span th:text="${user.role}"></span></p>
-            <p><strong>Nombre de factures:</strong> <span th:text="${user.factures != null ? user.factures.size() : 0}"></span></p>
-            <p><strong>Nombre de devis:</strong> <span th:text="${user.devis != null ? user.devis.size() : 0}"></span></p>
-        </div>
-        
-        <div class="nav-buttons">
-            <a th:if="${user.role == 'ROLE_CLIENT'}" th:href="@{/factures}" class="btn btn-primary">Mes factures</a>
-            <a th:if="${user.role == 'ROLE_CLIENT'}" th:href="@{/devis}" class="btn btn-primary">Mes devis</a>
-            <a th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }" th:href="@{/admin}" class="btn btn-primary">Retour au dashboard</a>
-        </div>
-    </div>
+	<section layout:fragment="content">
+		<!-- 	<div class="container"> -->
+		<!-- 		<div th:replace="~{menu-user :: mainMenuUser}"></div> -->
+
+		<h1>Mes informations</h1>
+
+		<div class="user-info">
+			<p
+				th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }">
+				<strong>ID:</strong> <span th:text="${user.id}"></span>
+			</p>
+			<p>
+				<strong>Nom d'utilisateur:</strong> <span th:text="${user.username}"></span>
+			</p>
+			<p
+				th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }">
+				<strong>Rôle:</strong> <span th:text="${user.role}"></span>
+			</p>
+			<p>
+				<strong>Nombre de factures:</strong> <span
+					th:text="${user.factures != null ? user.factures.size() : 0}"></span>
+			</p>
+			<p>
+				<strong>Nombre de devis:</strong> <span
+					th:text="${user.devis != null ? user.devis.size() : 0}"></span>
+			</p>
+		</div>
+
+		<div class="nav-buttons">
+			<a th:if="${user.role == 'ROLE_CLIENT'}" th:href="@{/factures}"
+				class="btn btn-primary">Mes factures</a> <a
+				th:if="${user.role == 'ROLE_CLIENT'}" th:href="@{/devis}"
+				class="btn btn-primary">Mes devis</a> <a
+				th:if="${user.role == 'ROLE_ADMIN' || user.role == 'ROLE_GARAGE_ADMIN' }"
+				th:href="@{/admin}" class="btn btn-primary">Retour au dashboard</a>
+		</div>
+		<!-- 	</div> -->
+	</section>
 </body>
 </html>
