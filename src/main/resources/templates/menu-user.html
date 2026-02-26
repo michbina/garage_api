@@ -4,16 +4,21 @@
 <body>
 
 	<div th:fragment="mainMenuUser">
-		<div th:replace="~{fragments/banner :: display-banner}"></div>
-		<nav>
-			<ul>
-				<li><a th:href="@{/factures}">Factures</a></li>
-				<li><a th:href="@{/devis}">Devis</a></li>
-				<li><a th:href="@{/change-password}">Changer mot de passe</a></li>
-				<li><a th:href="@{/logout}">Déconnexion</a></li>
-				<li><a th:href="@{/api/user/info}">Mon compte</a></li>
-			</ul>
-		</nav>
+		<div th:replace="~{fragments/banner-fragment :: display-banner}"></div>
+		<div class="navbar">
+			<a th:href="@{/factures}">Factures</a> 
+			<a th:href="@{/devis}">Devis</a>
+			<div class="dropdown">
+				<button class="dropbtn">
+					Mon compte<i class="fa fa-caret-down"></i>
+				</button>
+				<div class="dropdown-content">
+					<a th:href="@{/api/user/info}">Informations</a> <a
+						th:href="@{/change-password}">Changer de mot de passe</a> <a
+						th:href="@{/logout}">Déconnexion</a>
+				</div>
+			</div>
+		</div>
 	</div>
 
 

@@ -1,28 +1,32 @@
 /* =================================
-   Styles pour la Bannière Promotionnelle
+   Styles pour banner-fragment.html
    ================================= */
 .promotion-banner {
     display: flex;           /* Active Flexbox */
     align-items: center;     /* Centre verticalement les éléments */
     justify-content: center; /* Centre horizontalement le contenu */
     gap: 20px;               /* Espace entre l'image et le texte */
-    padding: 10px;           /* Espace intérieur */
-    background-color: #f8f9fa; /* Couleur de fond légère */
-    border-bottom: 1px solid #dee2e6; /* Ligne de séparation */
+    padding: 14px 20px;           /* Espace intérieur */
+    background-color: #1e90ff;   /* bleu vif */
+	color: #fff; /* Couleur de fond légère */
+    border-bottom: 2px solid #0b5ed7; /* Ligne de séparation */
     width: 100%;             /* Prend toute la largeur */
     box-sizing: border-box;  /* Assure que le padding ne dépasse pas la largeur */
+    position: relative;
+	z-index: 999;          /* Assure au-dessus du contenu */   
+	text-shadow: 0 1px 0 rgba(0,0,0,0.15);
 }
 
 .promotion-banner__image {
-    height: 50px;            /* Hauteur de l'image (et donc de la bannière) */
-    width: auto;             /* Largeur automatique pour garder les proportions */
-    flex-shrink: 0;          /* Empêche l'image de se compresser */
+    height: 56px;            /* Hauteur de l'image (et donc de la bannière) */
+/*     width: auto;             Largeur automatique pour garder les proportions */
+/*     flex-shrink: 0;          Empêche l'image de se compresser */
 }
 
 .promotion-banner__message {
     margin: 0;               /* Retire les marges par défaut du paragraphe */
-    font-size: 1.1em;
-    color: #333;
+    font-size: 1.15em;
+    font-weight: 600;
 }
 
 /* (Optionnel) Pour rendre la bannière responsive sur petits écrans */

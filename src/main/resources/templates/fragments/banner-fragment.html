@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+	<!-- ======================================================= -->
+	<!-- === FRAGMENT DÉDIÉ UNIQUEMENT À LA BANNIÈRE           === -->
+	<!-- Nom du fragment : "display-banner"                      -->
+	<!-- ======================================================= -->
+	<div th:fragment="display-banner">
+
+		<div th:if="${banner != null and banner.enabled}"
+			class="promotion-banner" role="region" aria-label="Promotion">
+			<img th:src="${banner.imageUrl}" alt="Promotion"
+				class="promotion-banner__image" />
+			<p th:if="${!#strings.isEmpty(banner.message)}"
+				th:text="${banner.message}" class="promotion-banner__message"></p>
+			<!-- 				TODO: ajouter un lien vers la promotion -->
+			<!-- 			<a href="/promo" class="cta" target="_blank" rel="noopener">En -->
+			<!-- 				savoir plus</a> -->
+		</div>
+	</div>
+
+</body>
+</html>
